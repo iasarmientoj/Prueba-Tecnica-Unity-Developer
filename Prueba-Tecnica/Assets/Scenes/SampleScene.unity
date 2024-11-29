@@ -455,16 +455,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f8a8b6d5dd0694da48bfc010ace647, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parameters: {fileID: 11400000, guid: 2e42838baf55bf2458e95d79b21d0d3f, type: 2}
   prefabCuboVerde: {fileID: 1861791203052551579, guid: 81da5ff4ce1ba2d44bb9af7bae185e36,
     type: 3}
   prefabCuboCafe: {fileID: 5977569679788167078, guid: d2f7e0fc74a87d44daff0f95096a3d86,
     type: 3}
-  sizeChunks: 13
-  cantPosObjetivosSeed: 6
-  seedLado: 4
-  seedUbicacionLado: 2
-  seedFormaCaminos: 2
-  randomness: 0.8
 --- !u!4 &1829937047
 Transform:
   m_ObjectHideFlags: 0

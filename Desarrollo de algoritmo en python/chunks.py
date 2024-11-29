@@ -3,7 +3,7 @@ import numpy as np
 
 
 #PARAMETROS
-sizeChunks = 13
+sizeChunks = 13 # min 9
 #determinar ubicaciones permitidas para continuar el camino desde la posicion actual
 vecinosIds = [(-1,0),(0,1),(1,0),(0,-1)] #posiciones vecinas a cualquier celda arriba, derecha, abajo, izquierda correspondientemente
 #posiciones vecinas diagonales segun la direccion en que vaya el camino
