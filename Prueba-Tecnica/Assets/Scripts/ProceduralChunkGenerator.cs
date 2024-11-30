@@ -71,21 +71,19 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         for (int i = chunksContainer.transform.childCount - 1; i >= 0; i--) // Loop through all child objects
             Destroy(chunksContainer.transform.GetChild(i).gameObject); // Destroy each child object
     }
-
     private void ResetVariables()
     {
         dictChunksCoord.Clear();
         cantBifurcacionesPosibles = 0;
         contadorDeChunks = 1;
     }
-
-
-
     private void GenerarAllChunks()
     {
         GenerarChunkBase();
-       // GenerarLosDemasChunks();
+        GenerarLosDemasChunks();
     }
+
+
 
     private void GenerarChunkBase()
     {
@@ -104,70 +102,46 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         dictChunksCoord[new Vector2Int(0, 0)] = chunk;
         ModelarChunk(new Vector2Int(0, 0));
     }
-
     private void GenerarLosDemasChunks()
     {
-        //PARA CADA CHUNK RESUELTO GENERAR SUS VECINOS
         while (contadorDeChunks < parameters.cantidadTotalDeChunks)
         {
+            //PARA CADA CHUNK RESUELTO GENERAR SUS VECINOS si no estan ocupados por otro chunk
             foreach (var kvp in dictChunksCoord.ToList())
             {
                 Vector2Int coordResuelto = kvp.Key;
                 int[,] chunkResuelto = kvp.Value;
 
+
+                //revisar los 4 lados del chunk presente
                 foreach (Vector2Int vecinoChunkId in vecinosChunksIds)
                 {
                     Vector2Int coordAbsolutas = new Vector2Int(coordResuelto.x + vecinoChunkId.x, coordResuelto.y + vecinoChunkId.y);
                     int offsetUnicoSemilla = coordAbsolutas.x + coordAbsolutas.y;
 
-                    //# si el vecino no existe en el diccionario de chunks, puede proceder a generarlo si es el caso
+                    // si el vecino no existe en el diccionario de chunks, puede proceder a generarlo si es el caso
                     if (!dictChunksCoord.ContainsKey(coordAbsolutas))
                     {
-
                         // Evaluar el chunk vecino de arriba
                         if (vecinoChunkId.Equals(new Vector2Int(0, 1)))
                         {
-
-
                             List<int> listChunkSup = GetlistChunkSup(chunkResuelto);
 
-
-
-                            //#si un camino terminó en la parte superior del chunk resuelto
+                            //si un camino terminó en la parte superior del chunk resuelto
                             if (listChunkSup.Contains(1))
                             {
-                                Debug.Log("Parte superior");
+                                Debug.Log("Generar chunk vecino: Parte superior");
                                 //inicializar el chunk con ceros
                                 int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
 
-                                //#copiarlo en las dos primeras filas para alejarlo del borde, es el unico paso posible
+                                //copiarlo en las dos primeras filas para alejarlo del borde, es el unico paso posible
                                 for (int i = 0; i < chunkResuelto.GetLength(0) - 1; i++)
                                 {
                                     newChunk[newChunk.GetLength(0) - 1,i] = chunkResuelto[0,i];
                                     newChunk[newChunk.GetLength(0) - 2,i] = chunkResuelto[0,i];
                                 }
 
-                                List<Vector2Int> coordenadasEn1 = ObtenerCoordenadasEn1(newChunk);
-
-                                //#la celda inicial es la siguiente a la del borde
-                                List<Vector2Int> posInicial = new List<Vector2Int>();
-                                foreach (Vector2Int coor1 in coordenadasEn1)
-                                {
-                                    // Verificar si la coordenada no está en los bordes del chunk
-                                    if (coor1.x != 0 && coor1.x != newChunk.GetLength(0) - 1 && coor1.y != 0 && coor1.y != newChunk.GetLength(0) - 1)
-                                    {
-                                        // Agregar la coordenada válida a la lista
-                                        posInicial.Add(new Vector2Int(coor1.x, coor1.y));
-                                    }
-                                }
-                                Debug.Log($"posInicial: {string.Join(", ", posInicial)}");
-
-
-                                List<Vector2Int> caminoEncontrado = GenerarCamino(newChunk, posInicial, false, offsetUnicoSemilla);
-                                ConsolidarChunk(newChunk, caminoEncontrado);
-                                newChunk = GenerarBifurcaciones(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
-
-                                dictChunksCoord[coordAbsolutas] = newChunk;
+                                GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
 
                                 contadorDeChunks++;
                                 if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
@@ -182,7 +156,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
                             if (listChunkInf.Contains(1))
                             {
-                                Debug.Log("Parte inferior");
+                                Debug.Log("Generar chunk vecino: Parte inferior");
                                 //inicializar el chunk con ceros
                                 int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
 
@@ -192,26 +166,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                                     newChunk[1,i] = chunkResuelto[newChunk.GetLength(0) - 1,i];
                                 }
 
-                                List<Vector2Int> coordenadasEn1 = ObtenerCoordenadasEn1(newChunk);
-
-                                //#la celda inicial es la siguiente a la del borde
-                                List<Vector2Int> posInicial = new List<Vector2Int>();
-                                foreach (Vector2Int coor1 in coordenadasEn1)
-                                {
-                                    // Verificar si la coordenada no está en los bordes del chunk
-                                    if (coor1.x != 0 && coor1.x != newChunk.GetLength(0) - 1 && coor1.y != 0 && coor1.y != newChunk.GetLength(0) - 1)
-                                    {
-                                        // Agregar la coordenada válida a la lista
-                                        posInicial.Add(new Vector2Int(coor1.x, coor1.y));
-                                    }
-                                }
-                                Debug.Log($"posInicial: {string.Join(", ", posInicial)}");
-
-                                List<Vector2Int> caminoEncontrado = GenerarCamino(newChunk, posInicial, false, offsetUnicoSemilla);
-                                ConsolidarChunk(newChunk, caminoEncontrado);
-                                newChunk = GenerarBifurcaciones(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
-
-                                dictChunksCoord[coordAbsolutas] = newChunk;
+                                GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
 
                                 contadorDeChunks++;
                                 if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
@@ -222,12 +177,12 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                         // Evaluar el chunk vecino de la derecha
                         if (vecinoChunkId.Equals(new Vector2Int(1, 0)))
                         {
-                            //#si un camino terminó en la parte derecha del chunk resuelto
+                            //si un camino terminó en la parte derecha del chunk resuelto
                             List<int> listChunkDer = GetlistChunkDer(chunkResuelto);
 
                             if (listChunkDer.Contains(1))
                             {
-                                Debug.Log("Parte derecha");
+                                Debug.Log("Generar chunk vecino: Parte derecha");
                                 //inicializar el chunk con ceros
                                 int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
 
@@ -238,26 +193,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                                     newChunk[i,1] = chunkResuelto[i,chunkResuelto.GetLength(0) - 1];
                                 }
 
-                                List<Vector2Int> coordenadasEn1 = ObtenerCoordenadasEn1(newChunk);
-
-                                //#la celda inicial es la siguiente a la del borde
-                                List<Vector2Int> posInicial = new List<Vector2Int>();
-                                foreach (Vector2Int coor1 in coordenadasEn1)
-                                {
-                                    // Verificar si la coordenada no está en los bordes del chunk
-                                    if (coor1.x != 0 && coor1.x != newChunk.GetLength(0) - 1 && coor1.y != 0 && coor1.y != newChunk.GetLength(0) - 1)
-                                    {
-                                        // Agregar la coordenada válida a la lista
-                                        posInicial.Add(new Vector2Int(coor1.x, coor1.y));
-                                    }
-                                }
-                                Debug.Log($"posInicial: {string.Join(", ", posInicial)}");
-
-                                List<Vector2Int> caminoEncontrado = GenerarCamino(newChunk, posInicial, false, offsetUnicoSemilla);
-                                ConsolidarChunk(newChunk, caminoEncontrado);
-                                newChunk = GenerarBifurcaciones(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
-
-                                dictChunksCoord[coordAbsolutas] = newChunk;
+                                GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
 
                                 contadorDeChunks++;
                                 if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
@@ -272,7 +208,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
                             if (listChunkIzq.Contains(1))
                             {
-                                Debug.Log("Parte izquierda");
+                                Debug.Log("Generar chunk vecino: Parte izquierda");
                                 //inicializar el chunk con ceros
                                 int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
 
@@ -282,26 +218,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                                     newChunk[i,chunkResuelto.GetLength(0) - 2] = chunkResuelto[i,0];
                                 }
 
-                                List<Vector2Int> coordenadasEn1 = ObtenerCoordenadasEn1(newChunk);
-
-                                //#la celda inicial es la siguiente a la del borde
-                                List<Vector2Int> posInicial = new List<Vector2Int>();
-                                foreach (Vector2Int coor1 in coordenadasEn1)
-                                {
-                                    // Verificar si la coordenada no está en los bordes del chunk
-                                    if (coor1.x != 0 && coor1.x != newChunk.GetLength(0) - 1 && coor1.y != 0 && coor1.y != newChunk.GetLength(0) - 1)
-                                    {
-                                        // Agregar la coordenada válida a la lista
-                                        posInicial.Add(new Vector2Int(coor1.x, coor1.y));
-                                    }
-                                }
-                                Debug.Log($"posInicial: {string.Join(", ", posInicial)}");
-
-                                List<Vector2Int> caminoEncontrado = GenerarCamino(newChunk, posInicial, false, offsetUnicoSemilla);
-                                ConsolidarChunk(newChunk, caminoEncontrado);
-                                newChunk = GenerarBifurcaciones(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
-
-                                dictChunksCoord[coordAbsolutas] = newChunk;
+                                GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
 
                                 contadorDeChunks++;
                                 if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
@@ -312,7 +229,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                 }
 
 
-
+                //aumentar la probabilidad de haber bifurcaciones
                 cantBifurcacionesPosibles += 1;
 
                 if (cantBifurcacionesPosibles > parameters.cantBifurcacionesPosiblesMax)
@@ -328,10 +245,272 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         }
 
 
+    }
 
 
 
+    private List<Vector2Int> GenerarCamino(int[,] chunkInput, List<Vector2Int> posInicial, bool esBifurcacion, int offsetUnicoSemilla)
+    {
 
+        #region Parámetros y variables
+
+        //Semillas con ligeros cambios con propiedades unicas de chunk para obtener resultados diferentes en cada chunk
+        int seed_cantIrregularidadDeCamino = parameters.seed_global + (int)(parameters.cantIrregularidadDeCamino * 100) + offsetUnicoSemilla;
+        int seed_siguientePasoDireccion = parameters.seed_global + offsetUnicoSemilla;
+
+        //hacer una copia del chunk o si no se conservan caminos fallidos
+        int[,] chunk = HacerCopiaChunk(chunkInput);
+
+        //hacer una copia del chunk o si no se conservan caminos fallidos
+        int[,] chunkOrig = HacerCopiaChunk(chunkInput);
+
+        int initId = 0;
+        Vector2Int posOrig = posInicial[initId];
+        Vector2Int posActual = posInicial[initId];
+        chunk[posActual.x,posActual.y] = 1;
+
+        List<Vector2Int> caminoEncontrado = new List<Vector2Int>();
+        caminoEncontrado.Add(posActual);
+        int incrementoSeed = 0;
+        int incrementoSeedIrr = 0;
+
+        //hallar los bordes de la matriz que ya tienen un 1 o fin de camino, para evitar terminar en el mismo borde
+        List<Vector2Int> bordesProhibidosList = new List<Vector2Int>();
+        List<Vector2Int> bordesProhibidosListLongCamino = new List<Vector2Int>();
+
+        int numeroDeIntentosCrearCamino = 0;
+
+        #endregion
+
+
+        #region Obtener bordes del chunk
+
+        //obtener los bordes del chunk para validar si tienen fines de canimo
+        List<int> listChunkSup = GetlistChunkSup(chunk);
+        List<int> listChunkInf = GetlistChunkInf(chunk);
+        List<int> listChunkDer = GetlistChunkDer(chunk);
+        List<int> listChunkIzq = GetlistChunkIzq(chunk);
+
+        #endregion
+
+
+        #region Validar bordes del chunk
+
+        // Si hay un 1 en el borde superior, se prohíbe terminar en ese borde, y así con los demás bordes
+        if (listChunkSup.Contains(1)) // Borde superior
+            for (int i = 0; i < chunk.GetLength(0); i++) //agregar todas las posiciones del borde de arriba
+                bordesProhibidosList.Add(new Vector2Int (0, i));
+
+        if (listChunkDer.Contains(1)) // Borde derecho
+            for (int i = 0; i < chunk.GetLength(0); i++)
+                bordesProhibidosList.Add(new Vector2Int(i, chunk.GetLength(0) - 1));
+
+        if (listChunkInf.Contains(1)) // Borde inferior
+            for (int i = 0; i < chunk.GetLength(0); i++)
+                bordesProhibidosList.Add(new Vector2Int(chunk.GetLength(0) - 1, i));
+
+        if (listChunkIzq.Contains(1)) // Borde izquierdo
+            for (int i = 0; i < chunk.GetLength(0); i++)
+                bordesProhibidosList.Add(new Vector2Int(i, 0));
+
+        #endregion
+
+        //mientras el camino no haya llegado a un borde del chunk
+        while (posActual.x != 0 && posActual.x != chunk.GetLength(0) - 1 && posActual.y != 0 && posActual.y != chunk.GetLength(0) - 1)
+        {
+
+            // para la celda actual hallar las posibles direcciones a las que se puede mover y almacenarlas en posiblesPasosId
+            var (posiblesPasosId, posicionAnterior) = CalcularPosiblesPasosDelCamino(chunk, posActual, bordesProhibidosList, bordesProhibidosListLongCamino);
+
+
+            // filtrar las posibles direcciones de movimiento segun el parámetro de IRREGULARIDAD que se definió y almacenarlas en posiblesPasosIdIrr
+            List<Vector2Int> posiblesPasosIdIrr = new List<Vector2Int>();
+
+
+            //si no hay posibles pasos y no ha terminado el while, es que se quedó sin camino y toca recalcular el camino con otra semilla
+            if (posiblesPasosId.Count == 0)
+            {
+                Debug.Log("CAMINO COLAPSADO, VOLVER A INTENTAR con otro seed");
+                seed_siguientePasoDireccion++;
+
+                //si es una bifurcación y colapsó, intentarla crear desde otro punto inicial
+                if (esBifurcacion)
+                    initId++;
+
+                //la bifurcacion no pudo iniciarse en ninguna celda del camino
+                if (initId > posInicial.Count - 1)
+                    return new List<Vector2Int>();
+
+                //restaurar el chunk original, la posicion inicial y el camino generado que colapsó
+                chunk = chunkOrig;
+                posActual = posInicial[initId];
+                chunk[posActual.x,posActual.y] = 1;
+
+                caminoEncontrado.Clear();
+                caminoEncontrado.Add(posActual);
+
+                incrementoSeed = 0;
+                incrementoSeedIrr = 0;
+
+                numeroDeIntentosCrearCamino++;
+
+            }
+            else
+            {
+
+                //Filtrar posibles direcciones del camino dependiendo de qué tan irregular se desee
+                posiblesPasosIdIrr = FiltrarPosiblesPasosDelCamino( posiblesPasosId,  posActual,  posicionAnterior,  seed_cantIrregularidadDeCamino,  offsetUnicoSemilla);
+
+
+
+                // si se solicitan caminos muy rectos y una longitud muy alta y luego del filtro no hay pasos disponibles, agregar las direcciones diferente a la recta o si no se choca contra el borde antes de tener la longitud solicitada
+                if (parameters.cantIrregularidadDeCamino < 0.6f && parameters.longMinCamino > 0.4f && posiblesPasosIdIrr.Count == 0)
+                {
+                    // Hallar posición donde sería el camino recto
+                    Vector2Int direccionRecta = new Vector2Int(posActual.x - posicionAnterior.x, posActual.y - posicionAnterior.y);
+
+                    foreach (Vector2Int posiblePaso in posiblesPasosId)
+                        if (!posiblePaso.Equals(direccionRecta)) // agregar las direcciones diferente a la recta
+                            posiblesPasosIdIrr.Add(posiblePaso);
+
+                }
+
+
+                // Si no hay posibles pasos y no ha terminado el while, es que se quedó sin camino y toca recalcular el camino con otra semilla
+                if (posiblesPasosIdIrr.Count == 0)
+                {
+                    Debug.Log("CAMINO COLAPSADO, VOLVER A INTENTAR con otro seed posiblesPasosIdIrr");
+                    seed_siguientePasoDireccion++;
+
+                    // Si es bifurcación recalcular la bifurcación desde otro punto de inicio
+                    if (esBifurcacion)
+                        initId++;
+
+                    // La bifurcación no pudo iniciarse en ninguna celda del camino
+                    if (initId > posInicial.Count - 1)
+                        return new List<Vector2Int>();
+
+                    chunk = chunkOrig;
+                    posActual = posInicial[initId];
+                    chunk[posActual.x,posActual.y] = 1;
+
+                    caminoEncontrado.Clear();
+                    caminoEncontrado.Add(posActual);
+                    incrementoSeed = 0;
+                    incrementoSeedIrr = 0;
+
+                    numeroDeIntentosCrearCamino++;
+                }
+                else
+                {
+                    //FINALMENTE seleccionar aleatoriamente el siguiente paso dentro de los pasos posibles filtrados para ir armando el camino
+                    Random.InitState(seed_siguientePasoDireccion + posActual.x + posActual.y + incrementoSeed + offsetUnicoSemilla + posiblesPasosIdIrr.Count + posiblesPasosId.Count); //tantas sumas para asegurarse que en cada celda del camino se use una semilla diferente pero esté bien definida para la repetibilidad
+                    incrementoSeed++;
+                    Vector2Int siguientePasoDireccion = posiblesPasosIdIrr[Random.Range(0, posiblesPasosIdIrr.Count)];
+                    posActual = new Vector2Int(posActual.x + siguientePasoDireccion.x, posActual.y + siguientePasoDireccion.y);
+                    caminoEncontrado.Add(posActual);
+                    chunk[posActual.x,posActual.y] = 1;
+                }
+
+            }
+
+            // condicion para que si no encuentra ningun camino no se quede en bucle, retorna un camino vacio
+            if (numeroDeIntentosCrearCamino > parameters.numeroDeIntentosCrearCaminoMax)
+                return new List<Vector2Int>();
+
+            // PARA EVITAR CAMINOS CORTOS marcar zonas prohibidas hasta que alcance una longitud minima
+            bordesProhibidosListLongCamino = ZonasProhibidasParaEvitarCaminosCortos(chunk);
+
+
+        }
+
+        return caminoEncontrado;
+
+
+    }
+    private int[,] ConsolidarChunk(int[,] chunk, List<Vector2Int> caminoEncontrado)
+    {
+        // Marcar las posiciones del camino en la matriz
+        foreach (Vector2Int posCamino in caminoEncontrado)
+        {
+            chunk[posCamino.x, posCamino.y] = 1;
+        }
+
+        // Construir el string para imprimir la matriz
+        string printChunk = "chunk\n";
+        for (int i = 0; i < chunk.GetLength(0); i++) // Recorre las filas
+        {
+            for (int j = 0; j < chunk.GetLength(1); j++) // Recorre las columnas
+            {
+                printChunk += chunk[i, j] + " ";
+            }
+            printChunk += "\n"; // Nueva línea después de cada fila
+        }
+
+        // Imprimir en la consola
+        Debug.Log(printChunk);
+
+        return chunk;
+    }
+    private int[,] GenerarBifurcaciones(List<Vector2Int> caminoEncontrado, int cantBifurcacionesPosibles, int[,] chunkInput, int offsetUnicoSemilla)
+    {
+
+        //hacer una copia del chunk o si no se conservan caminos fallidos
+        int[,] chunk = HacerCopiaChunk(chunkInput);
+
+        //definir semilla
+        Random.InitState(parameters.seed_global + caminoEncontrado.Count + offsetUnicoSemilla + cantBifurcacionesPosibles);
+        int cantBifurcaciones = Random.Range(0, cantBifurcacionesPosibles + 1);
+        Debug.Log("cantBifurcaciones: " + cantBifurcaciones);
+
+        // Agregar bifurcaciones si las hay
+        for (int num = 0; num < cantBifurcaciones; num++)
+        {
+            // Tomar una posición aleatoria de los caminos existentes, excluyendo los 2 bordes externos
+            List<Vector2Int> posicionesCaminosExistentes = new List<Vector2Int>();
+
+            for (int filaCount = 0; filaCount < chunk.GetLength(0); filaCount++)
+                for (int celdaCount = 0; celdaCount < chunk.GetLength(0); celdaCount++)
+                    if (chunk[filaCount,celdaCount] == 1)
+                        if (filaCount > 1 && filaCount < chunk.GetLength(0) - 2 && celdaCount > 1 && celdaCount < chunk.GetLength(0) - 2) //#si son celdas del centro, para que las bifurcaciones inicien desde el centro
+                            posicionesCaminosExistentes.Add(new Vector2Int(filaCount, celdaCount));
+          
+
+            // Si no hay celdas en el centro para escoger, tomar cualquier celda
+            if (posicionesCaminosExistentes.Count == 0)
+                posicionesCaminosExistentes = ObtenerCoordenadasEn1(chunk);
+
+            // Barajar las posiciones de los caminos existentes
+            Random.InitState(parameters.seed_global + offsetUnicoSemilla);
+            posicionesCaminosExistentes = posicionesCaminosExistentes.OrderBy(_ => Random.value).ToList();
+
+            // Encontrar y añadir el camino
+            caminoEncontrado = GenerarCamino(chunk, posicionesCaminosExistentes, true, offsetUnicoSemilla);
+            chunk = ConsolidarChunk(chunk, caminoEncontrado);
+        }
+
+        return chunk;
+    }
+    private void GenerarChunkVecino(int[,] newChunk, int offsetUnicoSemilla, Vector2Int coordAbsolutas)
+    {
+
+        List<Vector2Int> coordenadasEn1 = ObtenerCoordenadasEn1(newChunk);
+
+        //la celda inicial es la siguiente a la del borde
+        List<Vector2Int> posInicial = new List<Vector2Int>();
+        foreach (Vector2Int coor1 in coordenadasEn1)
+            if (coor1.x != 0 && coor1.x != newChunk.GetLength(0) - 1 && coor1.y != 0 && coor1.y != newChunk.GetLength(0) - 1) // Verificar si la coordenada no está en los bordes del chunk
+                posInicial.Add(new Vector2Int(coor1.x, coor1.y)); // Agregar la coordenada válida a la lista
+
+        Debug.Log($"posInicial: {string.Join(", ", posInicial)}");
+
+
+        List<Vector2Int> caminoEncontrado = GenerarCamino(newChunk, posInicial, false, offsetUnicoSemilla);
+        ConsolidarChunk(newChunk, caminoEncontrado);
+        newChunk = GenerarBifurcaciones(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
+
+        dictChunksCoord[coordAbsolutas] = newChunk;
+        ModelarChunk(coordAbsolutas);
     }
 
 
@@ -369,6 +548,8 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
         return listChunkIzq;
     }
+
+
 
     private (List<Vector2Int>, Vector2Int) CalcularPosiblesPasosDelCamino(int[,] chunk,    Vector2Int posActual,    List<Vector2Int> bordesProhibidosList,    List<Vector2Int> bordesProhibidosListLongCamino)
     {
@@ -524,224 +705,6 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
     }
 
-    private List<Vector2Int> GenerarCamino(int[,] chunkInput, List<Vector2Int> posInicial, bool esBifurcacion, int offsetUnicoSemilla)
-    {
-
-        #region Parámetros y variables
-
-        //Semillas con ligeros cambios con propiedades unicas de chunk para obtener resultados diferentes en cada chunk
-        int seed_cantIrregularidadDeCamino = parameters.seed_global + (int)(parameters.cantIrregularidadDeCamino * 100) + offsetUnicoSemilla;
-        int seed_siguientePasoDireccion = parameters.seed_global + offsetUnicoSemilla;
-
-        //hacer una copia del chunk o si no se conservan caminos fallidos
-        int[,] chunk = new int[parameters.sizeChunks, parameters.sizeChunks];
-        // Copiar los valores de la matriz de entrada
-        for (int i = 0; i < chunkInput.GetLength(0); i++)
-            for (int j = 0; j < chunkInput.GetLength(1); j++)
-                chunk[i, j] = chunkInput[i, j];
-
-        //hacer una copia del chunk o si no se conservan caminos fallidos
-        int[,] chunkOrig = new int[parameters.sizeChunks, parameters.sizeChunks];
-        // Copiar los valores de la matriz de entrada
-        for (int i = 0; i < chunkInput.GetLength(0); i++)
-            for (int j = 0; j < chunkInput.GetLength(1); j++)
-                chunkOrig[i, j] = chunkInput[i, j];
-
-        int initId = 0;
-        Vector2Int posOrig = posInicial[initId];
-        Vector2Int posActual = posInicial[initId];
-        chunk[posActual.x,posActual.y] = 1;
-
-        List<Vector2Int> caminoEncontrado = new List<Vector2Int>();
-        caminoEncontrado.Add(posActual);
-        int incrementoSeed = 0;
-        int incrementoSeedIrr = 0;
-
-        //hallar los bordes de la matriz que ya tienen un 1 o fin de camino, para evitar terminar en el mismo borde
-        List<Vector2Int> bordesProhibidosList = new List<Vector2Int>();
-        List<Vector2Int> bordesProhibidosListLongCamino = new List<Vector2Int>();
-
-        int numeroDeIntentosCrearCamino = 0;
-
-        #endregion
-
-
-        #region Obtener bordes del chunk
-
-        //obtener los bordes del chunk para validar si tienen fines de canimo
-        List<int> listChunkSup = GetlistChunkSup(chunk);
-        List<int> listChunkInf = GetlistChunkInf(chunk);
-        List<int> listChunkDer = GetlistChunkDer(chunk);
-        List<int> listChunkIzq = GetlistChunkIzq(chunk);
-
-        #endregion
-
-
-        #region Validar bordes del chunk
-
-        // Si hay un 1 en el borde superior, se prohíbe terminar en ese borde, y así con los demás bordes
-        if (listChunkSup.Contains(1)) // Borde superior
-            for (int i = 0; i < chunk.GetLength(0); i++) //agregar todas las posiciones del borde de arriba
-                bordesProhibidosList.Add(new Vector2Int (0, i));
-
-        if (listChunkDer.Contains(1)) // Borde derecho
-            for (int i = 0; i < chunk.GetLength(0); i++)
-                bordesProhibidosList.Add(new Vector2Int(i, chunk.GetLength(0) - 1));
-
-        if (listChunkInf.Contains(1)) // Borde inferior
-            for (int i = 0; i < chunk.GetLength(0); i++)
-                bordesProhibidosList.Add(new Vector2Int(chunk.GetLength(0) - 1, i));
-
-        if (listChunkIzq.Contains(1)) // Borde izquierdo
-            for (int i = 0; i < chunk.GetLength(0); i++)
-                bordesProhibidosList.Add(new Vector2Int(i, 0));
-
-        #endregion
-
-        //mientras el camino no haya llegado a un borde del chunk
-        while (posActual.x != 0 && posActual.x != chunk.GetLength(0) - 1 && posActual.y != 0 && posActual.y != chunk.GetLength(0) - 1)
-        {
-
-            // para la celda actual hallar las posibles direcciones a las que se puede mover y almacenarlas en posiblesPasosId
-            var (posiblesPasosId, posicionAnterior) = CalcularPosiblesPasosDelCamino(chunk, posActual, bordesProhibidosList, bordesProhibidosListLongCamino);
-
-
-            // filtrar las posibles direcciones de movimiento segun el parámetro de IRREGULARIDAD que se definió y almacenarlas en posiblesPasosIdIrr
-            List<Vector2Int> posiblesPasosIdIrr = new List<Vector2Int>();
-
-
-            //si no hay posibles pasos y no ha terminado el while, es que se quedó sin camino y toca recalcular el camino con otra semilla
-            if (posiblesPasosId.Count == 0)
-            {
-                Debug.Log("CAMINO COLAPSADO, VOLVER A INTENTAR con otro seed");
-                seed_siguientePasoDireccion++;
-
-                //si es una bifurcación y colapsó, intentarla crear desde otro punto inicial
-                if (esBifurcacion)
-                    initId++;
-
-                //la bifurcacion no pudo iniciarse en ninguna celda del camino
-                if (initId > posInicial.Count - 1)
-                    return new List<Vector2Int>();
-
-                //restaurar el chunk original, la posicion inicial y el camino generado que colapsó
-                chunk = chunkOrig;
-                posActual = posInicial[initId];
-                chunk[posActual.x,posActual.y] = 1;
-
-                caminoEncontrado.Clear();
-                caminoEncontrado.Add(posActual);
-
-                incrementoSeed = 0;
-                incrementoSeedIrr = 0;
-
-                numeroDeIntentosCrearCamino++;
-
-            }
-            else
-            {
-
-                //Filtrar posibles direcciones del camino dependiendo de qué tan irregular se desee
-                posiblesPasosIdIrr = FiltrarPosiblesPasosDelCamino( posiblesPasosId,  posActual,  posicionAnterior,  seed_cantIrregularidadDeCamino,  offsetUnicoSemilla);
-
-                /*
-                // Si es bifurcación, no tener en cuenta las reglas de irregularidad NO TENER EN CUENTA ES LO DE LAS DIAGONALES, SI LO DE LLA IRREGULARIDAD??????????????????????????????????????????????????????????????????????????????????????????????????????
-                if (esBifurcacion)
-                    posiblesPasosIdIrr = posiblesPasosId;
-                */
-
-
-                // si se solicitan caminos muy rectos y una longitud muy alta y luego del filtro no hay pasos disponibles, agregar las direcciones diferente a la recta o si no se choca contra el borde antes de tener la longitud solicitada
-                if (parameters.cantIrregularidadDeCamino < 0.2f && parameters.longMinCamino > 0.6f && posiblesPasosIdIrr.Count == 0)
-                {
-                    // Hallar posición donde sería el camino recto
-                    Vector2Int direccionRecta = new Vector2Int(posActual.x - posicionAnterior.x, posActual.y - posicionAnterior.y);
-
-                    foreach (Vector2Int posiblePaso in posiblesPasosId)
-                        if (!posiblePaso.Equals(direccionRecta)) // agregar las direcciones diferente a la recta
-                            posiblesPasosIdIrr.Add(posiblePaso);
-
-                }
-
-
-                // Si no hay posibles pasos y no ha terminado el while, es que se quedó sin camino y toca recalcular el camino con otra semilla
-                if (posiblesPasosIdIrr.Count == 0)
-                {
-                    Debug.Log("CAMINO COLAPSADO, VOLVER A INTENTAR con otro seed posiblesPasosIdIrr");
-                    seed_siguientePasoDireccion++;
-
-                    // Si es bifurcación recalcular la bifurcación desde otro punto de inicio
-                    if (esBifurcacion)
-                        initId++;
-
-                    // La bifurcación no pudo iniciarse en ninguna celda del camino
-                    if (initId > posInicial.Count - 1)
-                        return new List<Vector2Int>();
-
-                    chunk = chunkOrig;
-                    posActual = posInicial[initId];
-                    chunk[posActual.x,posActual.y] = 1;
-
-                    caminoEncontrado.Clear();
-                    caminoEncontrado.Add(posActual);
-                    incrementoSeed = 0;
-                    incrementoSeedIrr = 0;
-
-                    numeroDeIntentosCrearCamino++;
-                }
-                else
-                {
-                    //FINALMENTE seleccionar aleatoriamente el siguiente paso dentro de los pasos posibles filtrados para ir armando el camino
-                    Random.InitState(seed_siguientePasoDireccion + posActual.x + posActual.y + incrementoSeed + offsetUnicoSemilla + posiblesPasosIdIrr.Count + posiblesPasosId.Count); //tantas sumas para asegurarse que en cada celda del camino se use una semilla diferente pero esté bien definida para la repetibilidad
-                    incrementoSeed++;
-                    Vector2Int siguientePasoDireccion = posiblesPasosIdIrr[Random.Range(0, posiblesPasosIdIrr.Count)];
-                    posActual = new Vector2Int(posActual.x + siguientePasoDireccion.x, posActual.y + siguientePasoDireccion.y);
-                    caminoEncontrado.Add(posActual);
-                    chunk[posActual.x,posActual.y] = 1;
-                }
-
-            }
-
-            // condicion para que si no encuentra ningun camino no se quede en bucle, retorna un camino vacio
-            if (numeroDeIntentosCrearCamino > parameters.numeroDeIntentosCrearCaminoMax)
-                return new List<Vector2Int>();
-
-            // PARA EVITAR CAMINOS CORTOS marcar zonas prohibidas hasta que alcance una longitud minima
-            bordesProhibidosListLongCamino = ZonasProhibidasParaEvitarCaminosCortos(chunk);
-
-
-        }
-
-        return caminoEncontrado;
-
-
-    }
-
-
-    private int[,] ConsolidarChunk(int[,] chunk, List<Vector2Int> caminoEncontrado)
-    {
-        // Marcar las posiciones del camino en la matriz
-        foreach (Vector2Int posCamino in caminoEncontrado)
-        {
-            chunk[posCamino.x, posCamino.y] = 1;
-        }
-
-        // Construir el string para imprimir la matriz
-        string printChunk = "chunk\n";
-        for (int i = 0; i < chunk.GetLength(0); i++) // Recorre las filas
-        {
-            for (int j = 0; j < chunk.GetLength(1); j++) // Recorre las columnas
-            {
-                printChunk += chunk[i, j] + " ";
-            }
-            printChunk += "\n"; // Nueva línea después de cada fila
-        }
-
-        // Imprimir en la consola
-        Debug.Log(printChunk);
-
-        return chunk;
-    }
 
 
     private int[,] HacerCopiaChunk(int[,] chunkInput)
@@ -755,66 +718,6 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
         return chunk;
     }
-
-    private int[,] GenerarBifurcaciones(List<Vector2Int> caminoEncontrado, int cantBifurcacionesPosibles, int[,] chunkInput, int offsetUnicoSemilla)
-    {
-
-        //hacer una copia del chunk o si no se conservan caminos fallidos
-        int[,] chunk = HacerCopiaChunk(chunkInput);
-
-
-        Random.InitState(parameters.seed_global + caminoEncontrado.Count + offsetUnicoSemilla);
-        int cantBifurcaciones = Random.Range(0, cantBifurcacionesPosibles + 1);
-        Debug.Log("cantBifurcaciones: " + cantBifurcaciones);
-
-        // Agregar bifurcaciones si las hay
-        for (int num = 0; num < cantBifurcaciones; num++)
-        {
-            // Tomar una posición aleatoria de los caminos existentes
-            List<Vector2Int> posicionesCaminosExistentes = new List<Vector2Int>();
-
-            for (int filaCount = 0; filaCount < chunk.GetLength(0); filaCount++)
-            {
-                for (int celdaCount = 0; celdaCount < chunk.GetLength(0); celdaCount++)
-                {
-                    if (chunk[filaCount,celdaCount] == 1)
-                    {
-                        if (filaCount > chunk.GetLength(0) / 4 && filaCount < chunk.GetLength(0) - chunk.GetLength(0) / 4 && celdaCount > chunk.GetLength(0) / 4 && celdaCount < chunk.GetLength(0) - chunk.GetLength(0) / 4) //#si son celdas del centro
-                        {
-                            posicionesCaminosExistentes.Add(new Vector2Int(filaCount, celdaCount));
-                        }
-                    }
-                }
-            }
-
-            // Si no hay celdas en el centro para escoger, tomar cualquier celda
-            if (posicionesCaminosExistentes.Count == 0)
-            {
-                for (int filaCount = 0; filaCount < chunk.GetLength(0); filaCount++)
-                {
-                    for (int celdaCount = 0; celdaCount < chunk.GetLength(0); celdaCount++)
-                    {
-                        if (chunk[filaCount,celdaCount] == 1)
-                        {
-                            posicionesCaminosExistentes.Add(new Vector2Int(filaCount, celdaCount));
-                        }
-                    }
-                }
-            }
-
-            // Barajar las posiciones de los caminos existentes
-            Random.InitState(parameters.seed_global + offsetUnicoSemilla);
-            posicionesCaminosExistentes = posicionesCaminosExistentes.OrderBy(_ => Random.value).ToList();
-
-            // Encontrar y añadir el camino
-            caminoEncontrado = GenerarCamino(chunk, posicionesCaminosExistentes, true, offsetUnicoSemilla);
-            chunk = ConsolidarChunk(chunk, caminoEncontrado);
-        }
-
-        return chunk;
-    }
-
-
     private List<Vector2Int> ObtenerCoordenadasEn1(int[,] matrix)
     {
         List<Vector2Int> coordinates = new List<Vector2Int>();
