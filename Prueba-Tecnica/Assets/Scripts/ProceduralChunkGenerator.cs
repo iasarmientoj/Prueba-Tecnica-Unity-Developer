@@ -113,120 +113,119 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                 int[,] chunkResuelto = kvp.Value;
 
 
+                Vector2Int vecinoChunkId;
+                Vector2Int coordAbsolutas;
+                int offsetUnicoSemilla;
+
                 //revisar los 4 lados del chunk presente
-                foreach (Vector2Int vecinoChunkId in vecinosChunksIds)
+
+                // Evaluar el chunk vecino de arriba
+                vecinoChunkId = new Vector2Int(0, 1);
+                coordAbsolutas = new Vector2Int(coordResuelto.x + vecinoChunkId.x, coordResuelto.y + vecinoChunkId.y);
+                offsetUnicoSemilla = coordAbsolutas.x + coordAbsolutas.y;
+
+                List<int> listChunkSup = GetlistChunkSup(chunkResuelto);
+                //si un camino terminó en la parte superior del chunk resuelto y si el vecino no existe en el diccionario de chunks, puede proceder a generarlo si es el caso
+                if (listChunkSup.Contains(1) && !dictChunksCoord.ContainsKey(coordAbsolutas))
                 {
-                    Vector2Int coordAbsolutas = new Vector2Int(coordResuelto.x + vecinoChunkId.x, coordResuelto.y + vecinoChunkId.y);
-                    int offsetUnicoSemilla = coordAbsolutas.x + coordAbsolutas.y;
+                    Debug.Log("Generar chunk vecino: Parte superior");
+                    //inicializar el chunk con ceros
+                    int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
 
-                    // si el vecino no existe en el diccionario de chunks, puede proceder a generarlo si es el caso
-                    if (!dictChunksCoord.ContainsKey(coordAbsolutas))
+                    //copiar el borde para empalmar en las dos primeras filas para alejarlo del borde, que siga derecho una celda es el unico paso posible para que no toque el borde
+                    for (int i = 0; i < chunkResuelto.GetLength(0) - 1; i++)
                     {
-                        // Evaluar el chunk vecino de arriba
-                        if (vecinoChunkId.Equals(new Vector2Int(0, 1)))
-                        {
-                            List<int> listChunkSup = GetlistChunkSup(chunkResuelto);
-
-                            //si un camino terminó en la parte superior del chunk resuelto
-                            if (listChunkSup.Contains(1))
-                            {
-                                Debug.Log("Generar chunk vecino: Parte superior");
-                                //inicializar el chunk con ceros
-                                int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
-
-                                //copiarlo en las dos primeras filas para alejarlo del borde, es el unico paso posible
-                                for (int i = 0; i < chunkResuelto.GetLength(0) - 1; i++)
-                                {
-                                    newChunk[newChunk.GetLength(0) - 1,i] = chunkResuelto[0,i];
-                                    newChunk[newChunk.GetLength(0) - 2,i] = chunkResuelto[0,i];
-                                }
-
-                                GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
-
-                                contadorDeChunks++;
-                                if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
-                                    break;
-                            }
-                        }
-
-                        // Evaluar el chunk vecino de abajo
-                        if (vecinoChunkId.Equals( new Vector2Int(0, -1)))
-                        {
-                            List<int> listChunkInf = GetlistChunkInf(chunkResuelto);
-
-                            if (listChunkInf.Contains(1))
-                            {
-                                Debug.Log("Generar chunk vecino: Parte inferior");
-                                //inicializar el chunk con ceros
-                                int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
-
-                                for (int i = 0; i < chunkResuelto.GetLength(0) - 1; i++)
-                                {
-                                    newChunk[0,i] = chunkResuelto[newChunk.GetLength(0) - 1,i];
-                                    newChunk[1,i] = chunkResuelto[newChunk.GetLength(0) - 1,i];
-                                }
-
-                                GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
-
-                                contadorDeChunks++;
-                                if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
-                                    break;
-                            }
-                        }
-
-                        // Evaluar el chunk vecino de la derecha
-                        if (vecinoChunkId.Equals(new Vector2Int(1, 0)))
-                        {
-                            //si un camino terminó en la parte derecha del chunk resuelto
-                            List<int> listChunkDer = GetlistChunkDer(chunkResuelto);
-
-                            if (listChunkDer.Contains(1))
-                            {
-                                Debug.Log("Generar chunk vecino: Parte derecha");
-                                //inicializar el chunk con ceros
-                                int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
-
-                                for (int i = 0; i < chunkResuelto.GetLength(0) - 1; i++)
-                                {
-                                    //#copiarlo en las dos primeras filas para alejarlo del borde, es el unico paso posible
-                                    newChunk[i,0] = chunkResuelto[i,chunkResuelto.GetLength(0) - 1];
-                                    newChunk[i,1] = chunkResuelto[i,chunkResuelto.GetLength(0) - 1];
-                                }
-
-                                GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
-
-                                contadorDeChunks++;
-                                if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
-                                    break;
-                            }
-                        }
-
-                        // Evaluar el chunk vecino de la izquierda
-                        if (vecinoChunkId.Equals(new Vector2Int(-1, 0)))
-                        {
-                            List<int> listChunkIzq = GetlistChunkIzq(chunkResuelto);
-
-                            if (listChunkIzq.Contains(1))
-                            {
-                                Debug.Log("Generar chunk vecino: Parte izquierda");
-                                //inicializar el chunk con ceros
-                                int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
-
-                                for (int i = 0; i < chunkResuelto.GetLength(0) - 1; i++)
-                                {
-                                    newChunk[i,chunkResuelto.GetLength(0) - 1] = chunkResuelto[i,0];
-                                    newChunk[i,chunkResuelto.GetLength(0) - 2] = chunkResuelto[i,0];
-                                }
-
-                                GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
-
-                                contadorDeChunks++;
-                                if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
-                                    break;
-                            }
-                        }
+                        newChunk[newChunk.GetLength(0) - 1, i] = chunkResuelto[0, i];
+                        newChunk[newChunk.GetLength(0) - 2, i] = chunkResuelto[0, i];
                     }
+
+                    GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
+
+                    contadorDeChunks++;
+                    if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
+                        break;
                 }
+
+
+                // Evaluar el chunk vecino de abajo
+                vecinoChunkId = new Vector2Int(0, -1);
+                coordAbsolutas = new Vector2Int(coordResuelto.x + vecinoChunkId.x, coordResuelto.y + vecinoChunkId.y);
+                offsetUnicoSemilla = coordAbsolutas.x + coordAbsolutas.y;
+
+                List<int> listChunkInf = GetlistChunkInf(chunkResuelto);
+                if (listChunkInf.Contains(1) && !dictChunksCoord.ContainsKey(coordAbsolutas))
+                {
+                    Debug.Log("Generar chunk vecino: Parte inferior");
+                    //inicializar el chunk con ceros
+                    int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
+
+                    for (int i = 0; i < chunkResuelto.GetLength(0) - 1; i++)
+                    {
+                        newChunk[0, i] = chunkResuelto[newChunk.GetLength(0) - 1, i];
+                        newChunk[1, i] = chunkResuelto[newChunk.GetLength(0) - 1, i];
+                    }
+
+                    GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
+
+                    contadorDeChunks++;
+                    if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
+                        break;
+                }
+
+
+                // Evaluar el chunk vecino de la derecha
+                vecinoChunkId = new Vector2Int(1, 0);
+                coordAbsolutas = new Vector2Int(coordResuelto.x + vecinoChunkId.x, coordResuelto.y + vecinoChunkId.y);
+                offsetUnicoSemilla = coordAbsolutas.x + coordAbsolutas.y;
+
+                List<int> listChunkDer = GetlistChunkDer(chunkResuelto);
+                //si un camino terminó en la parte derecha del chunk resuelto
+                if (listChunkDer.Contains(1) && !dictChunksCoord.ContainsKey(coordAbsolutas))
+                {
+                    Debug.Log("Generar chunk vecino: Parte derecha");
+                    //inicializar el chunk con ceros
+                    int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
+
+                    for (int i = 0; i < chunkResuelto.GetLength(0) - 1; i++)
+                    {
+                        //#copiarlo en las dos primeras filas para alejarlo del borde, es el unico paso posible
+                        newChunk[i, 0] = chunkResuelto[i, chunkResuelto.GetLength(0) - 1];
+                        newChunk[i, 1] = chunkResuelto[i, chunkResuelto.GetLength(0) - 1];
+                    }
+
+                    GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
+
+                    contadorDeChunks++;
+                    if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
+                        break;
+                }
+
+
+                // Evaluar el chunk vecino de la izquierda
+                vecinoChunkId = new Vector2Int(-1, 0);
+                coordAbsolutas = new Vector2Int(coordResuelto.x + vecinoChunkId.x, coordResuelto.y + vecinoChunkId.y);
+                offsetUnicoSemilla = coordAbsolutas.x + coordAbsolutas.y;
+
+                List<int> listChunkIzq = GetlistChunkIzq(chunkResuelto);
+                if (listChunkIzq.Contains(1) && !dictChunksCoord.ContainsKey(coordAbsolutas))
+                {
+                    Debug.Log("Generar chunk vecino: Parte izquierda");
+                    //inicializar el chunk con ceros
+                    int[,] newChunk = new int[parameters.sizeChunks, parameters.sizeChunks];
+
+                    for (int i = 0; i < chunkResuelto.GetLength(0) - 1; i++)
+                    {
+                        newChunk[i, chunkResuelto.GetLength(0) - 1] = chunkResuelto[i, 0];
+                        newChunk[i, chunkResuelto.GetLength(0) - 2] = chunkResuelto[i, 0];
+                    }
+
+                    GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
+
+                    contadorDeChunks++;
+                    if (contadorDeChunks >= parameters.cantidadTotalDeChunks)
+                        break;
+                }
+
 
 
                 //aumentar la probabilidad de haber bifurcaciones
@@ -256,7 +255,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
         //Semillas con ligeros cambios con propiedades unicas de chunk para obtener resultados diferentes en cada chunk
         int seed_cantIrregularidadDeCamino = parameters.seed_global + (int)(parameters.cantIrregularidadDeCamino * 100) + offsetUnicoSemilla;
-        int seed_siguientePasoDireccion = parameters.seed_global + offsetUnicoSemilla;
+        int seed_siguientePasoDireccion = parameters.seed_global + offsetUnicoSemilla + (int)(parameters.cantIrregularidadDeCamino * 100) + (int)(parameters.longMinCamino * 100);
 
         //hacer una copia del chunk o si no se conservan caminos fallidos
         int[,] chunk = HacerCopiaChunk(chunkInput);
@@ -410,6 +409,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                     posActual = new Vector2Int(posActual.x + siguientePasoDireccion.x, posActual.y + siguientePasoDireccion.y);
                     caminoEncontrado.Add(posActual);
                     chunk[posActual.x,posActual.y] = 1;
+                   // Debug.Log(posActual.x.ToString() + " " + posActual.y.ToString());
                 }
 
             }
@@ -749,16 +749,12 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         GameObject chunkParent = new GameObject("Chunk (" + coordResuelto.x.ToString() + "," + coordResuelto.y.ToString() + ")");
         chunkParent.transform.position = new Vector3(coordResuelto.y * parameters.sizeChunks, 0, coordResuelto.x * parameters.sizeChunks);
 
-        // Crear la base con cubos cafés
-        for (int x = 0; x < parameters.sizeChunks; x++)
-        {
-            for (int y = 0; y < parameters.sizeChunks; y++)
-            {
-                Vector3 position = new Vector3(x - chunkParent.transform.position.x, 0, y + chunkParent.transform.position.z); // Base en y=0
-                GameObject cuboCafe = Instantiate(prefabCuboCafe, position, Quaternion.identity);
-                cuboCafe.transform.parent = chunkParent.transform; // Asignar el padre
-            }
-        }
+        // Crear la base con un solo cubo café para optimizar
+        Vector3 position = new Vector3(parameters.sizeChunks/2 - chunkParent.transform.position.x, 0, parameters.sizeChunks/2 + chunkParent.transform.position.z); // Base en y=0
+        GameObject cuboCafe = Instantiate(prefabCuboCafe, position, Quaternion.identity);
+        cuboCafe.transform.localScale = new Vector3(parameters.sizeChunks,1, parameters.sizeChunks);
+        cuboCafe.transform.parent = chunkParent.transform; // Asignar el padre
+
 
         // Colocar los cubos verdes donde hay ceros en la matriz
         for (int x = 0; x < parameters.sizeChunks; x++)
@@ -767,8 +763,8 @@ public class ProceduralsChunkGenerator : MonoBehaviour
             {
                 if (chunkResuelto[x,y] == 0)
                 {
-                    Vector3 position = new Vector3(x - chunkParent.transform.position.x, 1, y + chunkParent.transform.position.z); // Altura 1 sobre la base
-                    GameObject cuboVerde = Instantiate(prefabCuboVerde, position, Quaternion.identity);
+                    Vector3 position2 = new Vector3(x - chunkParent.transform.position.x, 1, y + chunkParent.transform.position.z); // Altura 1 sobre la base
+                    GameObject cuboVerde = Instantiate(prefabCuboVerde, position2, Quaternion.identity);
                     cuboVerde.transform.parent = chunkParent.transform; // Asignar el padre
                 }
             }
