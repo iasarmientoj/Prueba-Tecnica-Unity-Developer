@@ -747,10 +747,10 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
         // Crear un objeto vacío para agrupar los cubos
         GameObject chunkParent = new GameObject("Chunk (" + coordResuelto.x.ToString() + "," + coordResuelto.y.ToString() + ")");
-        chunkParent.transform.position = new Vector3(coordResuelto.y * parameters.sizeChunks, 0, coordResuelto.x * parameters.sizeChunks);
+        chunkParent.transform.position = new Vector3(-coordResuelto.y * parameters.sizeChunks, 0, coordResuelto.x * parameters.sizeChunks);
 
         // Crear la base con un solo cubo café para optimizar
-        Vector3 position = new Vector3(parameters.sizeChunks/2 - chunkParent.transform.position.x, 0, parameters.sizeChunks/2 + chunkParent.transform.position.z); // Base en y=0
+        Vector3 position = new Vector3(parameters.sizeChunks/2 + chunkParent.transform.position.x, 0, parameters.sizeChunks/2 + chunkParent.transform.position.z); // Base en y=0
         GameObject cuboCafe = Instantiate(prefabCuboCafe, position, Quaternion.identity);
         cuboCafe.transform.localScale = new Vector3(parameters.sizeChunks,1, parameters.sizeChunks);
         cuboCafe.transform.parent = chunkParent.transform; // Asignar el padre
@@ -763,7 +763,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
             {
                 if (chunkResuelto[x,y] == 0)
                 {
-                    Vector3 position2 = new Vector3(x - chunkParent.transform.position.x, 1, y + chunkParent.transform.position.z); // Altura 1 sobre la base
+                    Vector3 position2 = new Vector3(x + chunkParent.transform.position.x, 1, y + chunkParent.transform.position.z); // Altura 1 sobre la base
                     GameObject cuboVerde = Instantiate(prefabCuboVerde, position2, Quaternion.identity);
                     cuboVerde.transform.parent = chunkParent.transform; // Asignar el padre
                 }
