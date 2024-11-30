@@ -24,6 +24,8 @@ public class ChunkGeneratorConfig : ScriptableObject
 
     [Header("Número máximo de intentos para crear un camino en caso de falla")]
     [Range(0f, 50f)] public int numeroDeIntentosCrearCaminoMax = 10;
+    [Header("Chunks generados por cada frame para no afectar los FPS en la creación de chunks")]
+    [Range(0f, 50f)] public int chunksPorFrame = 5;
 
     [Header("----------------")]
     [Header("PARÁMETROS SEED")]

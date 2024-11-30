@@ -52,10 +52,17 @@ public class ProceduralsChunkGenerator : MonoBehaviour
     //diccionario que contiene todos los chunks generados y su coordenada correspondiente para poder reconstruirlos en unity
     private Dictionary<Vector2Int, int[,]> dictChunksCoord = new Dictionary<Vector2Int, int[,]>();
 
+    /*
+    [SerializeField] private int tamano;
+    private bool generandoCubos;
+    private Queue<Vector3> posicionesCubos; // Cola para almacenar las posiciones pendientes
+    private GameObject chunkParent;
+    public int cubosPorFrame = 100; // Puedes ajustar este valor según el rendimiento deseado
+    */
 
     private void Start()
     {
-        RegenerarChunks();
+        //RegenerarChunks();
     }
 
     public void RegenerarChunks()
@@ -63,8 +70,51 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         EliminarHijosContenedor(chunksContainer);
         ResetVariables();
         GenerarAllChunks();
+
+        /*
+        // Inicializar la cola y el contenedor de los cubos
+        posicionesCubos = new Queue<Vector3>();
+        chunkParent = new GameObject("Chunk (" + 0 + "," + 0 + ")");
+        chunkParent.transform.parent = chunksContainer.transform;
+
+        // Llenar la cola con las posiciones a generar
+        for (int x = 0; x < tamano; x++)
+        {
+            for (int y = 0; y < tamano; y++)
+            {
+                posicionesCubos.Enqueue(new Vector3(x, 1, y));
+            }
+        }
+
+        generandoCubos = true; // Activar la generación progresiva
+
+        */
     }
 
+
+    /*
+    private void Update()
+    {
+        if (generandoCubos)
+        {
+            // Generar varios cubos por frame para mejorar la fluidez
+            for (int i = 0; i < cubosPorFrame; i++)
+            {
+                if (posicionesCubos.Count > 0)
+                {
+                    Vector3 posicion = posicionesCubos.Dequeue();
+                    GameObject cuboVerde = Instantiate(prefabCuboVerde, posicion, Quaternion.identity);
+                    cuboVerde.transform.parent = chunkParent.transform;
+                }
+                else
+                {
+                    generandoCubos = false; // Finalizar cuando ya no queden cubos por generar
+                    break;
+                }
+            }
+        }
+    }
+    */
 
 
     private void EliminarHijosContenedor(GameObject chunksContainer)
