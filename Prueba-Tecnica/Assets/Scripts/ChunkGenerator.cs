@@ -10,6 +10,7 @@ public class ChunkGenerator : MonoBehaviour
     [SerializeField] private ChunkGeneratorConfig parameters;
     [SerializeField] private GameObject prefabCuboVerde;
     [SerializeField] private GameObject prefabCuboCafe;
+    [SerializeField] private GameObject chunksContainer;
 
 
     #region Definición de listas de direcciones de movimiento
@@ -56,8 +57,33 @@ public class ChunkGenerator : MonoBehaviour
         ModelChunk();
     }
 
+    public void RegenerarChunks()
+    {
+        DeleteChildren(chunksContainer);
+        ResetVariables();
+        GenerarChunks();
+        ModelChunk();
 
-    private List<(int, int)> EncontrarCamino(List<List<int>> chunkInput, List<(int, int)> posInicial, bool esBifurcacion)
+    }
+
+    private void ResetVariables()
+    {
+        dictChunksCoord.Clear();
+        cantBifurcacionesPosibles = 0;
+        contadorDeChunks = 1;
+    }
+
+    private void DeleteChildren(GameObject chunksContainer)
+    {
+        // Loop through all child objects
+        for (int i = chunksContainer.transform.childCount - 1; i >= 0; i--)
+        {
+            // Destroy each child object
+            Destroy(chunksContainer.transform.GetChild(i).gameObject);
+        }
+    }
+
+    private List<(int, int)> EncontrarCamino(List<List<int>> chunkInput, List<(int, int)> posInicial, bool esBifurcacion, int offsetUnicoSemilla)
     {
         //hacer una copia del chunk o si no se conservan caminos fallidos
         List<List<int>> chunk = new List<List<int>>();
@@ -76,8 +102,8 @@ public class ChunkGenerator : MonoBehaviour
         (int, int) posOrig = posInicial[initId];
 
         //PARAMETROS
-        int seed_cantIrregularidadDeCamino = parameters.seed_cantIrregularidadDeCamino + (int)(parameters.cantIrregularidadDeCamino * 100);
-        int seed_siguientePasoDireccion = parameters.seed_siguientePasoDireccion;
+        int seed_cantIrregularidadDeCamino = parameters.seed_global + (int)(parameters.cantIrregularidadDeCamino * 100);
+        int seed_siguientePasoDireccion = parameters.seed_global;
 
 
 
@@ -229,7 +255,7 @@ public class ChunkGenerator : MonoBehaviour
                             foreach ((int, int) posiblePaso in posiblesPasosId)
                             {
 
-                                Random.InitState(seed_cantIrregularidadDeCamino + incrementoSeedIrr);
+                                Random.InitState(seed_cantIrregularidadDeCamino + incrementoSeedIrr + offsetUnicoSemilla);
                                 if (posiblePaso.Equals(direccionRecta))
                                 {
                                     posiblesPasosIdIrr.Add(posiblePaso);
@@ -306,7 +332,7 @@ public class ChunkGenerator : MonoBehaviour
                 }
                 else
                 {
-                    Random.InitState((int)(seed_siguientePasoDireccion + posActual.Item1 + posActual.Item2 + incrementoSeed));
+                    Random.InitState((int)(seed_siguientePasoDireccion + posActual.Item1 + posActual.Item2 + incrementoSeed + offsetUnicoSemilla));
                     incrementoSeed++;
                     //seleccionar aleatoriamente el siguiente paso dentro de los pasos posibles para ir armando el camino
                     (int, int) siguientePasoDireccion = posiblesPasosIdIrr[Random.Range(0, posiblesPasosIdIrr.Count-1)];
@@ -390,7 +416,7 @@ public class ChunkGenerator : MonoBehaviour
     }
 
 
-    private List<List<int>> GenerarBifurcacionese(List<(int, int)> caminoEncontrado, int cantBifurcacionesPosibles, List<List<int>> chunkInput)
+    private List<List<int>> GenerarBifurcacionese(List<(int, int)> caminoEncontrado, int cantBifurcacionesPosibles, List<List<int>> chunkInput, int offsetUnicoSemilla)
     {
 
         //hacer una copia del chunk o si no se conservan caminos fallidos
@@ -400,7 +426,7 @@ public class ChunkGenerator : MonoBehaviour
 
 
 
-        Random.InitState(parameters.seed_cantBifurcaciones + caminoEncontrado.Count);
+        Random.InitState(parameters.seed_global + caminoEncontrado.Count + offsetUnicoSemilla);
         int cantBifurcaciones = Random.Range(0, cantBifurcacionesPosibles + 1);
         Debug.Log("cantBifurcaciones: " + cantBifurcaciones);
 
@@ -440,11 +466,11 @@ public class ChunkGenerator : MonoBehaviour
             }
 
             // Barajar las posiciones de los caminos existentes
-            Random.InitState(parameters.seed_origenBifurcaciones);
+            Random.InitState(parameters.seed_global + offsetUnicoSemilla);
             posicionesCaminosExistentes = posicionesCaminosExistentes.OrderBy(_ => Random.value).ToList();
 
             // Encontrar y añadir el camino
-            caminoEncontrado = EncontrarCamino(chunk, posicionesCaminosExistentes, true);
+            caminoEncontrado = EncontrarCamino(chunk, posicionesCaminosExistentes, true , offsetUnicoSemilla);
             chunk = PrintChunk(chunk, caminoEncontrado);
         }
 
@@ -486,10 +512,10 @@ public class ChunkGenerator : MonoBehaviour
 
 
         //generar camino principal
-        List<(int, int)> caminoEncontrado = EncontrarCamino(chunk, posInicial, false);
+        List<(int, int)> caminoEncontrado = EncontrarCamino(chunk, posInicial, false , 0);
         chunk = PrintChunk(chunk, caminoEncontrado);
         //generar posibles bifurcaciones
-        chunk = GenerarBifurcacionese(caminoEncontrado, cantBifurcacionesPosibles, chunk);
+        chunk = GenerarBifurcacionese(caminoEncontrado, cantBifurcacionesPosibles, chunk, 0);
 
         //agregar el chunk generado al diccionario de chunks
         dictChunksCoord[(0, 0)] = chunk;
@@ -513,6 +539,7 @@ public class ChunkGenerator : MonoBehaviour
                 foreach ((int, int) vecinoChunkId in vecinosChunksIds)
                 {
                     (int, int) coordAbsolutas = (coordResuelto.Item1 + vecinoChunkId.Item1, coordResuelto.Item2 + vecinoChunkId.Item2);
+                    int offsetUnicoSemilla = coordAbsolutas.Item1 + coordAbsolutas.Item2;
 
                     //# si el vecino no existe en el diccionario de chunks, puede proceder a generarlo si es el caso
                     if (!dictChunksCoord.ContainsKey(coordAbsolutas))
@@ -553,9 +580,9 @@ public class ChunkGenerator : MonoBehaviour
                                 Debug.Log($"posInicial: {string.Join(", ", posInicial)}");
 
 
-                                caminoEncontrado = EncontrarCamino(newChunk, posInicial, false);
+                                caminoEncontrado = EncontrarCamino(newChunk, posInicial, false, offsetUnicoSemilla);
                                 PrintChunk(newChunk, caminoEncontrado);
-                                newChunk = GenerarBifurcacionese(caminoEncontrado, cantBifurcacionesPosibles, newChunk);
+                                newChunk = GenerarBifurcacionese(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
 
                                 dictChunksCoord[coordAbsolutas] = newChunk;
 
@@ -597,9 +624,9 @@ public class ChunkGenerator : MonoBehaviour
                                 }
                                 Debug.Log($"posInicial: {string.Join(", ", posInicial)}");
 
-                                caminoEncontrado = EncontrarCamino(newChunk, posInicial, false);
+                                caminoEncontrado = EncontrarCamino(newChunk, posInicial, false, offsetUnicoSemilla);
                                 PrintChunk(newChunk, caminoEncontrado);
-                                newChunk = GenerarBifurcacionese(caminoEncontrado, cantBifurcacionesPosibles, newChunk);
+                                newChunk = GenerarBifurcacionese(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
 
                                 dictChunksCoord[coordAbsolutas] = newChunk;
 
@@ -648,9 +675,9 @@ public class ChunkGenerator : MonoBehaviour
                                 }
                                 Debug.Log($"posInicial: {string.Join(", ", posInicial)}");
 
-                                caminoEncontrado = EncontrarCamino(newChunk, posInicial, false);
+                                caminoEncontrado = EncontrarCamino(newChunk, posInicial, false, offsetUnicoSemilla);
                                 PrintChunk(newChunk, caminoEncontrado);
-                                newChunk = GenerarBifurcacionese(caminoEncontrado, cantBifurcacionesPosibles, newChunk);
+                                newChunk = GenerarBifurcacionese(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
 
                                 dictChunksCoord[coordAbsolutas] = newChunk;
 
@@ -696,9 +723,9 @@ public class ChunkGenerator : MonoBehaviour
                                 }
                                 Debug.Log($"posInicial: {string.Join(", ", posInicial)}");
 
-                                caminoEncontrado = EncontrarCamino(newChunk, posInicial, false);
+                                caminoEncontrado = EncontrarCamino(newChunk, posInicial, false, offsetUnicoSemilla);
                                 PrintChunk(newChunk, caminoEncontrado);
-                                newChunk = GenerarBifurcacionese(caminoEncontrado, cantBifurcacionesPosibles, newChunk);
+                                newChunk = GenerarBifurcacionese(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
 
                                 dictChunksCoord[coordAbsolutas] = newChunk;
 
@@ -771,6 +798,8 @@ public class ChunkGenerator : MonoBehaviour
                     }
                 }
             }
+
+            chunkParent.transform.parent = chunksContainer.transform; // Asignar el padre de todos los chunks
 
 
         }
