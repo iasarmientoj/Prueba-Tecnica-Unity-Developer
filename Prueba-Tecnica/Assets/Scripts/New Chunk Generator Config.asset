@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: New Chunk Generator Config
   m_EditorClassIdentifier: 
   sizeChunks: 13
-  cantidadTotalDeChunks: 10
+  cantidadTotalDeChunks: 50
   cantBifurcacionesPosiblesMax: 3
-  cantIrregularidadDeCamino: 0.208
-  longMinCamino: 0.289
+  cantIrregularidadDeCamino: 0.824
+  longMinCamino: 0.412
   numeroDeIntentosCrearCaminoMax: 10
   seed_global: 0

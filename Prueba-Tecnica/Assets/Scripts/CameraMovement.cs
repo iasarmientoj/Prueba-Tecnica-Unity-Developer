@@ -2,26 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraMovement : MonoBehaviour
+public class CameraDragMovement : MonoBehaviour
 {
     [SerializeField] private Transform cam;
 
-    // Velocidad de movimiento de la cámara
-    [SerializeField] private float moveSpeed = 30f;
+    // Velocidad de movimiento de la cámara al arrastrar
+    [SerializeField] private float dragSpeed = 2f;
 
     // Velocidad del zoom
     [SerializeField] private float zoomSpeed = 10f;
 
-
+    // Variable para almacenar la posición inicial del mouse al arrastrar
+    private Vector3 lastMousePosition;
 
     void Update()
     {
-        // Movimiento en el plano XZ
-        float moveHorizontal = Input.GetAxis("Horizontal"); // A/D o flechas izquierda/derecha
-        float moveVertical = Input.GetAxis("Vertical");     // W/S o flechas arriba/abajo
+        // Movimiento con clic derecho y arrastre
+        if (Input.GetMouseButtonDown(0)) // Botón izq del mouse presionado
+        {
+            lastMousePosition = Input.mousePosition;
+        }
+        else if (Input.GetMouseButton(0)) // Mantener presionado el botón izq
+        {
+            Vector3 deltaMousePosition = Input.mousePosition - lastMousePosition;
+            lastMousePosition = Input.mousePosition;
 
-        Vector3 movement = new Vector3(moveHorizontal, 0, moveVertical);
-        transform.Translate(movement * moveSpeed * Time.deltaTime);
+            // Movimiento en el plano XZ según el delta del mouse
+            Vector3 movement = new Vector3(-deltaMousePosition.x, 0, -deltaMousePosition.y) * dragSpeed * Time.deltaTime;
+            transform.Translate(movement);
+        }
 
         // Zoom con la rueda del ratón
         float scroll = Input.GetAxis("Mouse ScrollWheel"); // Valor de la rueda del ratón

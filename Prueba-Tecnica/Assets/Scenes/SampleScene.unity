@@ -662,7 +662,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 60, y: 50}
-  m_SizeDelta: {x: 615.4, y: 110.134705}
+  m_SizeDelta: {x: 634.05, y: 110.134705}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &669584349
 MonoBehaviour:
@@ -733,6 +733,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parameters: {fileID: 11400000, guid: 2e42838baf55bf2458e95d79b21d0d3f, type: 2}
   prefabCuboVerde: {fileID: 1861791203052551579, guid: 81da5ff4ce1ba2d44bb9af7bae185e36,
+    type: 3}
+  prefabCuboVerdeInicio: {fileID: 1861791203052551579, guid: 3f44bfc88ac53bf41ac7b0cb19687d1d,
     type: 3}
   prefabCuboCafe: {fileID: 5977569679788167078, guid: d2f7e0fc74a87d44daff0f95096a3d86,
     type: 3}
@@ -858,7 +860,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Usa las teclas W,A,S y D para desplazarte.\nUsa la rueda del rat\xF3n
+  m_text: "Haz clic y arrastra el mouse para desplazarte.\nUsa la rueda del rat\xF3n
     para hacer zoom."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -968,7 +970,7 @@ MonoBehaviour:
   mainCamera: {fileID: 330585545}
   chunksContainer: {fileID: 2128657094}
   cullingUpdateInterval: 0.1
-  margenVision: 0.14
+  margenVision: 0.2
 --- !u!4 &1001007443
 Transform:
   m_ObjectHideFlags: 0
@@ -1344,8 +1346,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 330585546}
-  moveSpeed: 30
-  zoomSpeed: 10
+  dragSpeed: 2
+  zoomSpeed: 40
 --- !u!4 &2109134452
 Transform:
   m_ObjectHideFlags: 0

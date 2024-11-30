@@ -9,6 +9,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
     [Header("Referencias")]
     [SerializeField] private ChunkGeneratorConfig parameters;
     [SerializeField] private GameObject prefabCuboVerde;
+    [SerializeField] private GameObject prefabCuboVerdeInicio;
     [SerializeField] private GameObject prefabCuboCafe;
     [SerializeField] private GameObject chunksContainer;
 
@@ -94,13 +95,17 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
         //generar camino principal
         List<Vector2Int> caminoEncontrado = GenerarCamino(chunk, posInicial, false, 0);
+
         chunk = ConsolidarChunk(chunk, caminoEncontrado);
         //generar posibles bifurcaciones
         chunk = GenerarBifurcaciones(caminoEncontrado, cantBifurcacionesPosibles, chunk, 0);
 
         //agregar el chunk generado al diccionario de chunks
         dictChunksCoord[new Vector2Int(0, 0)] = chunk;
-        ModelarChunk(new Vector2Int(0, 0));
+        StartCoroutine(ModelarChunk(new Vector2Int(0, 0), true));
+
+
+
     }
     private void GenerarLosDemasChunks()
     {
@@ -138,6 +143,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                         newChunk[newChunk.GetLength(0) - 1, i] = chunkResuelto[0, i];
                         newChunk[newChunk.GetLength(0) - 2, i] = chunkResuelto[0, i];
                     }
+
 
                     GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
 
@@ -218,6 +224,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                         newChunk[i, chunkResuelto.GetLength(0) - 1] = chunkResuelto[i, 0];
                         newChunk[i, chunkResuelto.GetLength(0) - 2] = chunkResuelto[i, 0];
                     }
+
 
                     GenerarChunkVecino(newChunk, offsetUnicoSemilla, coordAbsolutas);
 
@@ -317,7 +324,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         //mientras el camino no haya llegado a un borde del chunk
         while (posActual.x != 0 && posActual.x != chunk.GetLength(0) - 1 && posActual.y != 0 && posActual.y != chunk.GetLength(0) - 1)
         {
-
+            
             // para la celda actual hallar las posibles direcciones a las que se puede mover y almacenarlas en posiblesPasosId
             var (posiblesPasosId, posicionAnterior) = CalcularPosiblesPasosDelCamino(chunk, posActual, bordesProhibidosList, bordesProhibidosListLongCamino);
 
@@ -341,7 +348,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                     return new List<Vector2Int>();
 
                 //restaurar el chunk original, la posicion inicial y el camino generado que colapsó
-                chunk = chunkOrig;
+                chunk = HacerCopiaChunk(chunkOrig);
                 posActual = posInicial[initId];
                 chunk[posActual.x,posActual.y] = 1;
 
@@ -352,6 +359,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                 incrementoSeedIrr = 0;
 
                 numeroDeIntentosCrearCamino++;
+
 
             }
             else
@@ -389,7 +397,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                     if (initId > posInicial.Count - 1)
                         return new List<Vector2Int>();
 
-                    chunk = chunkOrig;
+                    chunk = HacerCopiaChunk(chunkOrig);
                     posActual = posInicial[initId];
                     chunk[posActual.x,posActual.y] = 1;
 
@@ -409,7 +417,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                     posActual = new Vector2Int(posActual.x + siguientePasoDireccion.x, posActual.y + siguientePasoDireccion.y);
                     caminoEncontrado.Add(posActual);
                     chunk[posActual.x,posActual.y] = 1;
-                   // Debug.Log(posActual.x.ToString() + " " + posActual.y.ToString());
+                    Debug.Log(posActual.x.ToString() + " " + posActual.y.ToString());
                 }
 
             }
@@ -419,9 +427,12 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                 return new List<Vector2Int>();
 
             // PARA EVITAR CAMINOS CORTOS marcar zonas prohibidas hasta que alcance una longitud minima
-            bordesProhibidosListLongCamino = ZonasProhibidasParaEvitarCaminosCortos(chunk);
-
-
+            bordesProhibidosListLongCamino = ZonasProhibidasParaEvitarCaminosCortos(chunk, false);
+            
+            //si es el camino principal y colapsó muchas veces, si o si tiene que hacer un camino así no cumpla con todos los requisitos
+            if (!esBifurcacion && numeroDeIntentosCrearCamino > parameters.numeroDeIntentosCrearCaminoMax / 2)
+                bordesProhibidosListLongCamino = ZonasProhibidasParaEvitarCaminosCortos(chunk, true);
+            
         }
 
         return caminoEncontrado;
@@ -506,11 +517,15 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
 
         List<Vector2Int> caminoEncontrado = GenerarCamino(newChunk, posInicial, false, offsetUnicoSemilla);
+
+
         ConsolidarChunk(newChunk, caminoEncontrado);
         newChunk = GenerarBifurcaciones(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
 
         dictChunksCoord[coordAbsolutas] = newChunk;
-        ModelarChunk(coordAbsolutas);
+        StartCoroutine(ModelarChunk(coordAbsolutas, false));
+
+
     }
 
 
@@ -659,7 +674,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
         return posiblesPasosIdIrr;
     }
-    private List<Vector2Int> ZonasProhibidasParaEvitarCaminosCortos(int[,] chunk)
+    private List<Vector2Int> ZonasProhibidasParaEvitarCaminosCortos(int[,] chunk, bool crearCaminoSeguro)
     {
         List<Vector2Int> bordesProhibidosListLongCamino = new List<Vector2Int>();
 
@@ -671,6 +686,10 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                     numeroDe1enMatriz++;
 
         float longMinima = (parameters.sizeChunks * 1.5f * parameters.longMinCamino);
+
+        if (crearCaminoSeguro)
+            longMinima = longMinima/3;
+
         // Si la longitud es muy corta, tiene prohibido los bordes
         if (numeroDe1enMatriz <= longMinima)
         {
@@ -700,6 +719,10 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         {
             bordesProhibidosListLongCamino.Clear();
         }
+
+
+
+
 
         return bordesProhibidosListLongCamino;
 
@@ -738,8 +761,10 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
 
 
-    private void ModelarChunk(Vector2Int coordResuelto)
+    private IEnumerator ModelarChunk(Vector2Int coordResuelto, bool esBase)
     {
+
+        yield return null;
 
         // modelar en unity el chunk del diccionario de la coordenada solicitada
         int[,] chunkResuelto = dictChunksCoord[coordResuelto];
@@ -764,7 +789,14 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                 if (chunkResuelto[x,y] == 0)
                 {
                     Vector3 position2 = new Vector3(x + chunkParent.transform.position.x, 1, y + chunkParent.transform.position.z); // Altura 1 sobre la base
-                    GameObject cuboVerde = Instantiate(prefabCuboVerde, position2, Quaternion.identity);
+
+
+                    GameObject cuboVerde;
+                    if (esBase)
+                     cuboVerde = Instantiate(prefabCuboVerdeInicio, position2, Quaternion.identity);
+                    else
+                     cuboVerde = Instantiate(prefabCuboVerde, position2, Quaternion.identity);
+
                     cuboVerde.transform.parent = chunkParent.transform; // Asignar el padre
                 }
             }
