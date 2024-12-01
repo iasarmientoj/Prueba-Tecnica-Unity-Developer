@@ -1216,6 +1216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d74ff564b98f7e46a8484ee52f5c1e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parameters: {fileID: 11400000, guid: 2e42838baf55bf2458e95d79b21d0d3f, type: 2}
   mainCamera: {fileID: 330585545}
   chunksContainer: {fileID: 2128657094}
   cullingUpdateInterval: 0.1

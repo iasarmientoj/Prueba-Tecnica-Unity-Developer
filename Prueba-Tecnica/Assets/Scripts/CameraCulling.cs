@@ -5,6 +5,8 @@ using UnityEngine;
 public class CameraCulling : MonoBehaviour
 {
     // Referencia a la cámara
+    [SerializeField] private ChunkGeneratorConfig parameters;
+
     [SerializeField] private Camera mainCamera;
 
     // Referencia al objeto que contiene los cubos
@@ -35,7 +37,11 @@ public class CameraCulling : MonoBehaviour
         {
             // Comprueba si el cubo está dentro del campo de visión de la cámara, mas un margen 
             Vector3 viewportPoint = mainCamera.WorldToViewportPoint(child.position);
-            bool isVisible = ( viewportPoint.x > 0- margenVision && viewportPoint.x < 1+ margenVision && viewportPoint.y > 0- margenVision && viewportPoint.y < 1+ margenVision && viewportPoint.z > 0);
+
+            // o si la distancia entre el player y el chunk es menor al tamaño de los chunks
+            float distancia = Vector3.Distance(mainCamera.transform.position, child.position);
+
+            bool isVisible = (( viewportPoint.x > 0- margenVision && viewportPoint.x < 1+ margenVision && viewportPoint.y > 0- margenVision && viewportPoint.y < 1+ margenVision && viewportPoint.z > 0) || distancia <= parameters.sizeChunks*1.5f); 
 
             child.gameObject.SetActive(isVisible);
         }
