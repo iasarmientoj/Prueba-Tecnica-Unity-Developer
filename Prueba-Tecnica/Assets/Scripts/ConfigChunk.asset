@@ -15,8 +15,8 @@ MonoBehaviour:
   sizeChunks: 13
   cantidadTotalDeChunks: 50
   cantBifurcacionesPosiblesMax: 3
-  cantIrregularidadDeCamino: 0.803
-  longMinCamino: 0.726
+  cantIrregularidadDeCamino: 0.129
+  longMinCamino: 0.212
   numeroDeIntentosCrearCaminoMax: 10
   chunkRegionPorFrame: 1
   seed_global: 0

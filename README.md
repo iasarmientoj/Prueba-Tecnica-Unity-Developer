@@ -34,22 +34,38 @@ Este proyecto utiliza un enfoque de generación procedural para crear terrenos r
 2. **Optimización por Occlusion Culling**  
    Solo se renderizan los chunks visibles en pantalla.  
    
-<div align="center">![Demo 2](/README-recursos/02-demo2.gif "Demo 2")</div>
+<div align="center">
+
+![Demo 2](/README-recursos/02-demo2.gif "Demo 2")
+
+</div>
 
 3. **Modos de Visualización**  
    Modo esquemático vs. HD.  
    
-<div align="center">![Demo 3](/README-recursos/02-demo3.gif "Demo 3")</div>
+<div align="center">
+
+![Demo 3](/README-recursos/02-demo3.gif "Demo 3")
+
+</div>
 
 4. **Modo Primera Persona**  
    Navegación inmersiva a través de los caminos generados.  
    
-<div align="center">![Demo 4](/README-recursos/02-demo4.gif "Demo 4")</div>
+<div align="center">
+
+![Demo 4](/README-recursos/02-demo4.gif "Demo 4")
+
+</div>
 
 5. **Caminos menos irregulares y con menor movimiento**  
    Forma de caminos ajustable.  
    
-<div align="center">![Demo 5](/README-recursos/02-demo5.gif "Demo 54")</div>
+<div align="center">
+
+![Demo 5](/README-recursos/02-demo5.gif "Demo 54")
+
+</div>
 
 ---
 
@@ -60,12 +76,12 @@ La lógica principal se encuentra en el script `ProceduralChunkGenerator.cs`. La
 #### Paso 1: Reinicio de chunks existentes  
 Elimina los chunks previos y reinicia variables clave.  
 ```csharp
-    public void RegenerarChunks()
-    {
-        EliminarHijosContenedor(chunksContainer);
-        ResetVariables();
-        GenerarAllChunks();
-    }
+public void RegenerarChunks()
+{
+	EliminarHijosContenedor(chunksContainer);
+	ResetVariables();
+	GenerarAllChunks();
+}
 ```
 
 #### Paso 2: Generación del primer chunk  
@@ -92,12 +108,23 @@ El primer chunk inicia desde su centro y no tiene vecinos.
    Usa **`ModelarChunk()`** para instanciar modelos básicos o detallados según la configuración seleccionada.  
 
 ```csharp
-// Ejemplo de función de generación de chunks
-void GenerarPrimerChunk() {
-    int[,] matrizChunk = new int[tamaño, tamaño];
-    GenerarCamino(matrizChunk, posicionInicial);
-    dictChunksCoord.Add(coordAbsoluta, matrizChunk);
-    ModelarChunk(coordAbsoluta, matrizChunk);
+private void GenerarChunkBase()
+{
+	//inicializar el chunk con ceros y el tamaño correcto
+	int[,] chunk = new int[parameters.sizeChunks, parameters.sizeChunks];
+	//la posición inicial del primer chunk es en el centro
+	List<Vector2Int> posInicial = new List<Vector2Int> { new Vector2Int(chunk.GetLength(0) / 2, chunk.GetLength(0) / 2) };
+
+	//generar camino principal
+	List<Vector2Int> caminoEncontrado = GenerarCamino(chunk, posInicial, false, 0);
+
+	chunk = ConsolidarChunk(chunk, caminoEncontrado);
+	//generar posibles bifurcaciones
+	chunk = GenerarBifurcaciones(caminoEncontrado, cantBifurcacionesPosibles, chunk, 0);
+
+	//agregar el chunk generado al diccionario de chunks
+	dictChunksCoord[new Vector2Int(0, 0)] = chunk;
+	ModelarChunk(new Vector2Int(0, 0), true);
 }
 ```
 
