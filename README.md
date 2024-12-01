@@ -25,27 +25,27 @@ Este proyecto utiliza un enfoque de generación procedural para crear terrenos r
 1. **Generación Procedural de 200 Chunks**  
    La animación muestra hasta 3 bifurcaciones por chunk, irregularidades y caminos amplios. 
    
-   ![Demo 1](/README-recursos/02-demo1.gif "Demo 1")
+<div align="center">![Demo 1](/README-recursos/02-demo1.gif "Demo 1")</div>
 
 2. **Optimización por Occlusion Culling**  
    Solo se renderizan los chunks visibles en pantalla.  
    
-   ![Demo 2](/README-recursos/02-demo2.gif "Demo 2")
+<div align="center">![Demo 2](/README-recursos/02-demo2.gif "Demo 2")</div>
 
 3. **Modos de Visualización**  
    Modo esquemático vs. HD.  
    
-   ![Demo 3](/README-recursos/02-demo3.gif "Demo 3")
+<div align="center">![Demo 3](/README-recursos/02-demo3.gif "Demo 3")</div>
 
 4. **Modo Primera Persona**  
    Navegación inmersiva a través de los caminos generados.  
    
-   ![Demo 4](/README-recursos/02-demo4.gif "Demo 4")
+<div align="center">![Demo 4](/README-recursos/02-demo4.gif "Demo 4")</div>
 
 5. **Caminos menos irregulares y con menor movimiento**  
    Forma de caminos ajustable.  
    
-   ![Demo 5](/README-recursos/02-demo5.gif "Demo 54")
+<div align="center">![Demo 5](/README-recursos/02-demo5.gif "Demo 54")</div>
 
 ---
 
