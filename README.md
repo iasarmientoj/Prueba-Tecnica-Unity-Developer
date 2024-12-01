@@ -176,7 +176,7 @@ La función **`GenerarLosDemasChunks()`** expande la generación:
 ### Recursos Externos Utilizados  
 
 1. **Assets de Vegetación**  
-   - *[Stylized Nature Kit Lite](https://assetstore.unity.com/packages/3d/environments/stylized-nature-kit-lite-176906)*. 
+   - *[Stylized Nature Kit Lite](https://assetstore.unity.com/packages/3d/environments/stylized-nature-kit-lite-176906)*
 
 2. **Movimiento en Primera Persona**  
    - Basado en el tutorial: *[First Person Controller - Basic Movement and Mouse Input (EP01) [Unity Tutorial]](https://www.youtube.com/watch?v=2FTDa14nryI&list=PLfhbBaEcybmgidDH3RX_qzFM0mIxWJa21)*
