@@ -792,9 +792,17 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         return coordinates;
     }
 
-    
+
 
     private void ModelarChunk(Vector2Int coordResuelto, bool esBase)
+    {
+        if (renderHD)
+            ModelarChunkHD(coordResuelto, esBase);
+        else
+            ModelarChunkNormal(coordResuelto, esBase);
+
+    }
+    private void ModelarChunkNormal(Vector2Int coordResuelto, bool esBase)
     {
         // modelar en unity el chunk del diccionario de la coordenada solicitada
         int[,] chunkResuelto = dictChunksCoord[coordResuelto];
@@ -834,7 +842,46 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
         chunkParent.transform.parent = chunksContainer.transform; // Asignar el padre de todos los chunks
 
+    }
+    private void ModelarChunkHD(Vector2Int coordResuelto, bool esBase)
+    {
+        // modelar en unity el chunk del diccionario de la coordenada solicitada
+        int[,] chunkResuelto = dictChunksCoord[coordResuelto];
 
+
+        // Crear un objeto vacío para agrupar los cubos
+        GameObject chunkParent = new GameObject("Chunk (" + coordResuelto.x.ToString() + "," + coordResuelto.y.ToString() + ")");
+        chunkParent.transform.position = new Vector3(-coordResuelto.y * parameters.sizeChunks, 0, coordResuelto.x * parameters.sizeChunks);
+
+        // Crear la base con un solo cubo café para optimizar
+        Vector3 position = new Vector3(parameters.sizeChunks/2 + chunkParent.transform.position.x, 0, parameters.sizeChunks/2 + chunkParent.transform.position.z); // Base en y=0
+        GameObject cuboCafe = Instantiate(prefabCuboCafeHD, position, Quaternion.identity);
+        cuboCafe.transform.localScale = new Vector3(parameters.sizeChunks,1, parameters.sizeChunks);
+        cuboCafe.transform.parent = chunkParent.transform; // Asignar el padre
+
+
+        // Colocar los cubos verdes donde hay ceros en la matriz
+        for (int x = 0; x < parameters.sizeChunks; x++)
+        {
+            for (int y = 0; y < parameters.sizeChunks; y++)
+            {
+                if (chunkResuelto[x,y] == 0)
+                {
+                    Vector3 position2 = new Vector3(x + chunkParent.transform.position.x, 1, y + chunkParent.transform.position.z); // Altura 1 sobre la base
+
+
+                    GameObject cuboVerde;
+                    if (esBase)
+                     cuboVerde = Instantiate(prefabCuboVerdeInicioHD[Random.Range(0, prefabCuboVerdeInicioHD.Length)], position2, Quaternion.identity);
+                    else
+                     cuboVerde = Instantiate(prefabCuboVerdeHD[Random.Range(0, prefabCuboVerdeInicioHD.Length)], position2, Quaternion.identity);
+
+                    cuboVerde.transform.parent = chunkParent.transform; // Asignar el padre
+                }
+            }
+        }
+
+        chunkParent.transform.parent = chunksContainer.transform; // Asignar el padre de todos los chunks
 
     }
 
