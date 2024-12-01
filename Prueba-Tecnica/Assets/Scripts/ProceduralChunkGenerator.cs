@@ -13,6 +13,10 @@ public class ProceduralsChunkGenerator : MonoBehaviour
     [SerializeField] private GameObject prefabCuboCafe;
     [SerializeField] private GameObject chunksContainer;
 
+    [Header("Referencias HD")]
+    [SerializeField] private GameObject[] prefabCuboVerdeHD;
+    [SerializeField] private GameObject[] prefabCuboVerdeInicioHD;
+    [SerializeField] private GameObject prefabCuboCafeHD;
 
     #region Definición de listas de direcciones de movimiento
     // Listas auxiliares para el funcionamiento del algoritmo
@@ -53,17 +57,10 @@ public class ProceduralsChunkGenerator : MonoBehaviour
     private Dictionary<Vector2Int, int[,]> dictChunksCoord = new Dictionary<Vector2Int, int[,]>();
 
     private bool generandoCubos;
+    private Queue<(Vector2Int, bool)> colaChunks; // Cola para almacenar las posiciones pendientes
 
     
 
-
-
-
-
-    [SerializeField] private int tamano;
-    private Queue<Vector3> posicionesCubos; // Cola para almacenar las posiciones pendientes
-    private GameObject chunkParent;
-    
 
     private void Start()
     {
@@ -72,48 +69,36 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
     public void RegenerarChunks()
     {
+        // Inicializar la cola y el contenedor de los cubos
+        colaChunks = new Queue<(Vector2Int, bool)>();
+
+
         EliminarHijosContenedor(chunksContainer);
         ResetVariables();
         GenerarAllChunks();
 
 
-
-
-
-        
-        // Inicializar la cola y el contenedor de los cubos
-        posicionesCubos = new Queue<Vector3>();
-        chunkParent = new GameObject("Chunk (" + 0 + "," + 0 + ")");
-        chunkParent.transform.parent = chunksContainer.transform;
-
-        // Llenar la cola con las posiciones a generar
-        for (int x = 0; x < tamano; x++)
-        {
-            for (int y = 0; y < tamano; y++)
-            {
-                posicionesCubos.Enqueue(new Vector3(x, 1, y));
-            }
-        }
-
-        generandoCubos = true; // Activar la generación progresiva
-
-        
     }
 
-
-    
     private void Update()
     {
+        Debug.Log("------------------------------------------- "+dictChunksCoord.Count());
+
         if (generandoCubos)
         {
             // Generar varios chunks por frame para mejorar la fluidez
             for (int i = 0; i < parameters.chunksPorFrame; i++)
             {
-                if (posicionesCubos.Count > 0)
+                if (colaChunks.Count > 0)
                 {
-                    Vector3 posicion = posicionesCubos.Dequeue();
-                    GameObject cuboVerde = Instantiate(prefabCuboVerde, posicion, Quaternion.identity);
-                    cuboVerde.transform.parent = chunkParent.transform;
+                    (Vector2Int, bool) coordBaseResuelto = colaChunks.Dequeue();
+
+                    Vector2Int coordResuelto = coordBaseResuelto.Item1;
+                    bool esBase = coordBaseResuelto.Item2;
+
+
+                    ModelarChunkOptimizado(coordResuelto, esBase);
+
                 }
                 else
                 {
@@ -124,6 +109,18 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         }
     }
     
+
+    public void ModoHD_ON()
+    {
+        RegenerarChunks();
+    }
+
+    public void ModoHD_OFF()
+    {
+        RegenerarChunks();
+    }
+
+
 
 
     private void EliminarHijosContenedor(GameObject chunksContainer)
@@ -140,7 +137,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
     private void GenerarAllChunks()
     {
         GenerarChunkBase();
-        GenerarLosDemasChunks();
+        StartCoroutine(GenerarLosDemasChunksAux());
     }
 
 
@@ -165,6 +162,12 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
 
 
+    }
+    
+    private IEnumerator GenerarLosDemasChunksAux()
+    {
+        yield return null;
+        GenerarLosDemasChunks();
     }
     private void GenerarLosDemasChunks()
     {
@@ -476,7 +479,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                     posActual = new Vector2Int(posActual.x + siguientePasoDireccion.x, posActual.y + siguientePasoDireccion.y);
                     caminoEncontrado.Add(posActual);
                     chunk[posActual.x,posActual.y] = 1;
-                    Debug.Log(posActual.x.ToString() + " " + posActual.y.ToString());
+                    //Debug.Log(posActual.x.ToString() + " " + posActual.y.ToString());
                 }
 
             }
@@ -821,9 +824,18 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
 
     private void ModelarChunk(Vector2Int coordResuelto, bool esBase)
+    {/*
+        //aqui solo llenar la cola con las propiedades de los chunks, en el Update es donde se generan
+        colaChunks.Enqueue((coordResuelto, esBase));
+        generandoCubos = true; // Activar la generación progresiva
+        */
+
+        ModelarChunkOptimizado(coordResuelto, esBase);
+    }
+    
+
+    private void ModelarChunkOptimizado(Vector2Int coordResuelto, bool esBase)
     {
-
-
         // modelar en unity el chunk del diccionario de la coordenada solicitada
         int[,] chunkResuelto = dictChunksCoord[coordResuelto];
 

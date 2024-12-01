@@ -210,7 +210,7 @@ MonoBehaviour:
         m_MethodName: PlayOneShot
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 8300000, guid: a84a10ed504112a4db9c39e3c45c4c3a,
+          m_ObjectArgument: {fileID: 8300000, guid: 66e98cfb84cf41b42b2b4fd4a30c9735,
             type: 3}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
           m_IntArgument: 0
@@ -741,7 +741,20 @@ MonoBehaviour:
   prefabCuboCafe: {fileID: 5977569679788167078, guid: d2f7e0fc74a87d44daff0f95096a3d86,
     type: 3}
   chunksContainer: {fileID: 2128657093}
-  tamano: 0
+  prefabCuboVerdeHD:
+  - {fileID: 1861791203052551579, guid: 24d86a047e867ec4f840c37d54f13c7d, type: 3}
+  - {fileID: 1861791203052551579, guid: b92a7b4378289e54db65ded85eb709c2, type: 3}
+  - {fileID: 1861791203052551579, guid: 0cfcb5ed88315164c90dd80aaf984b04, type: 3}
+  - {fileID: 1861791203052551579, guid: ae800e4c4c33d3246ac822ad8d7af52d, type: 3}
+  - {fileID: 1861791203052551579, guid: 970a1d454e7ae464ab4b9658518958de, type: 3}
+  - {fileID: 1861791203052551579, guid: 697144cf6ebe623459ddcaddbfbb839f, type: 3}
+  prefabCuboVerdeInicioHD:
+  - {fileID: 1861791203052551579, guid: f4cda8b7254634d408ce1e5350038d9e, type: 3}
+  - {fileID: 1861791203052551579, guid: d234e31cba633cb4fae983d198e9eb3f, type: 3}
+  - {fileID: 1861791203052551579, guid: 8c9c40c61eddfc64e859b0993ccd6993, type: 3}
+  - {fileID: 1861791203052551579, guid: 3c29560df443cc54db377c2cfebce030, type: 3}
+  prefabCuboCafeHD: {fileID: 5977569679788167078, guid: f9a8fa506e47ecd4da95922a6b666b1e,
+    type: 3}
 --- !u!4 &788572793
 Transform:
   m_ObjectHideFlags: 0
@@ -1345,7 +1358,7 @@ MonoBehaviour:
         m_MethodName: PlayOneShot
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 8300000, guid: a4078b14f14a82c4c90203b48668b9ed,
+          m_ObjectArgument: {fileID: 8300000, guid: 14cbd4b9dd8decc47b03888b10e88e8b,
             type: 3}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
           m_IntArgument: 0
@@ -1355,7 +1368,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 788572792}
         m_TargetAssemblyTypeName: ProceduralsChunkGenerator, Assembly-CSharp
-        m_MethodName: RegenerarChunks
+        m_MethodName: ModoHD_OFF
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1893,7 +1906,7 @@ MonoBehaviour:
         m_MethodName: PlayOneShot
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 8300000, guid: 48d2fc16a32f16b4bb838286644a5fe8,
+          m_ObjectArgument: {fileID: 8300000, guid: 681d0008b74eb3c4e919b817d002ddc9,
             type: 3}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
           m_IntArgument: 0
@@ -1903,7 +1916,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 788572792}
         m_TargetAssemblyTypeName: ProceduralsChunkGenerator, Assembly-CSharp
-        m_MethodName: RegenerarChunks
+        m_MethodName: ModoHD_ON
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
