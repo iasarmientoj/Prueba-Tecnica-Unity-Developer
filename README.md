@@ -73,7 +73,7 @@ Este proyecto utiliza un enfoque de generación procedural para crear terrenos r
 Configuración de `ConfigChunk.asset`
 Este archivo permite personalizar los parámetros de la generación procedural. Estos son los ajustes disponibles:
 
-<img src="/README-recursos/03-ui.png" alt="ui" width="200"/>
+<img align="center" src="/README-recursos/03-ui.png" alt="ui" width="600"/>
 
 #### **Parámetros Principales**
 - **Tamaño del Chunk:** Define el tamaño de cada chunk generado.  
