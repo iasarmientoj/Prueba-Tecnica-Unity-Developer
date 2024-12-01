@@ -17,6 +17,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
     [SerializeField] private GameObject[] prefabCuboVerdeHD;
     [SerializeField] private GameObject[] prefabCuboVerdeInicioHD;
     [SerializeField] private GameObject prefabCuboCafeHD;
+    private bool renderHD = false;
 
     #region Definición de listas de direcciones de movimiento
     // Listas auxiliares para el funcionamiento del algoritmo
@@ -57,7 +58,6 @@ public class ProceduralsChunkGenerator : MonoBehaviour
     private Dictionary<Vector2Int, int[,]> dictChunksCoord = new Dictionary<Vector2Int, int[,]>();
 
 
-    private bool renderHD = false;
 
     private void Start()
     {

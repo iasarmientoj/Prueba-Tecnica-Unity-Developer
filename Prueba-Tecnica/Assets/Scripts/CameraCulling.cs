@@ -4,21 +4,17 @@ using UnityEngine;
 
 public class CameraCulling : MonoBehaviour
 {
-    // Referencia a la cámara
+    // Referencia a los parámetros de los chunks
     [SerializeField] private ChunkGeneratorConfig parameters;
-
+    // Referencia a la cámara
     [SerializeField] private Camera mainCamera;
-
     // Referencia al objeto que contiene los cubos
     [SerializeField] private Transform chunksContainer;
-
     // Intervalo de actualización en segundos (para mejorar rendimiento)
     [SerializeField] private float cullingUpdateInterval = 0.1f;
-
-
-    [SerializeField] private float margenVision = 0.14f;
-
     private float nextUpdateTime = 0f;
+    // Margen de visión más allá de los límites de la cámara
+    [SerializeField] private float margenVision = 0.14f;
 
     void Update()
     {
@@ -37,7 +33,6 @@ public class CameraCulling : MonoBehaviour
         {
             // Comprueba si el cubo está dentro del campo de visión de la cámara, mas un margen 
             Vector3 viewportPoint = mainCamera.WorldToViewportPoint(child.position);
-
             // o si la distancia entre el player y el chunk es menor al tamaño de los chunks
             float distancia = Vector3.Distance(mainCamera.transform.position, child.position);
 
@@ -47,12 +42,10 @@ public class CameraCulling : MonoBehaviour
         }
     }
 
-
+    // Intercambia entre la cámara del modo noormal y del modo FPS
     public void SetCamFPS(Camera cam)
     {
         mainCamera = cam;
     }
-
-
 
 }

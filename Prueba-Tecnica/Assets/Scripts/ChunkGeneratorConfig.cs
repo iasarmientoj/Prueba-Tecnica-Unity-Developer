@@ -13,7 +13,7 @@ public class ChunkGeneratorConfig : ScriptableObject
     [Header("Cantidad de chunks a generar")]
     [Range(1f, 500f)] public int cantidadTotalDeChunks = 20;
     [Header("Cantidad máxima de bifurcaciones")]
-    [Range(0f, 3f)] public int cantBifurcacionesPosiblesMax = 3; // máximo 3 bifurcaciones
+    [Range(0f, 3f)] public int cantBifurcacionesPosiblesMax = 3; // máximo 3 bifurcaciones, una por cada lado libre dell chunk
     [Header("Irregularidad de los caminos")]
     [Range(0f, 1f)] public float cantIrregularidadDeCamino = 0.7f; // 0: recto, 1: irregular
     [Header("'Movimiento' de los caminos")]
