@@ -74,11 +74,7 @@ Configuración de `ConfigChunk.asset`
 Este archivo permite personalizar los parámetros de la generación procedural. Estos son los ajustes disponibles:
 
 
-<div align="center" width="240">
-
-![UI](/README-recursos/03-ui.png "UI")
-
-</div>
+<img align='right' src="/README-recursos/03-ui.png" width="240">
 
 
 #### **Parámetros Principales**
