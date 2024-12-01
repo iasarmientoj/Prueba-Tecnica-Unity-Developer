@@ -87,24 +87,24 @@ public void RegenerarChunks()
 #### Paso 2: Generación del primer chunk  
 El primer chunk inicia desde su centro y no tiene vecinos.  
 
-1. **Inicialización de la matriz:**  
+2.1. **Inicialización de la matriz:**  
    Se crea una matriz 2D de ceros según el tamaño definido.  
 
-2. **Trazado del camino:**  
+2.2. **Trazado del camino:**  
    - Función principal: **`GenerarCamino()`**.  
    - Evalúa direcciones posibles (**`CalcularPosiblesPasosDelCamino()`**).  
    - Filtra direcciones según parámetros del usuario (**`FiltrarPosiblesPasosDelCamino()`**).  
 
-3. **Marcado del camino en la matriz:**  
+2.3. **Marcado del camino en la matriz:**  
    Actualiza la matriz con el camino principal generado.  
 
-4. **Bifurcaciones:**  
+2.4. **Bifurcaciones:**  
    Genera caminos adicionales desde puntos aleatorios del camino principal usando **`GenerarBifurcaciones()`**.  
 
-5. **Almacenamiento:**  
+2.5. **Almacenamiento:**  
    Guarda la matriz del chunk en el diccionario **`dictChunksCoord`**.  
 
-6. **Modelado en Unity:**  
+2.6. **Modelado en Unity:**  
    Usa **`ModelarChunk()`** para instanciar modelos básicos o detallados según la configuración seleccionada.  
 
 ```csharp
@@ -131,9 +131,9 @@ private void GenerarChunkBase()
 #### Paso 3: Generación de chunks vecinos  
 La función **`GenerarLosDemasChunks()`** expande la generación:  
 
-1. Evalúa bordes de cada chunk para detectar finales de caminos.  
-2. Genera nuevos chunks vecinos usando **`GenerarChunkVecino()`**.  
-3. Almacena nuevos chunks en el diccionario y modela sus matrices.  
+3.1. Evalúa bordes de cada chunk para detectar finales de caminos.  
+3.2. Genera nuevos chunks vecinos usando **`GenerarChunkVecino()`**.  
+3.3. Almacena nuevos chunks en el diccionario y modela sus matrices.  
 
 ---
 
