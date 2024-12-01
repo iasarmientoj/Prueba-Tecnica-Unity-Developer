@@ -739,8 +739,7 @@ MonoBehaviour:
   prefabCuboCafe: {fileID: 5977569679788167078, guid: d2f7e0fc74a87d44daff0f95096a3d86,
     type: 3}
   chunksContainer: {fileID: 2128657093}
-  tamano: 100
-  cubosPorFrame: 1000
+  tamano: 0
 --- !u!4 &788572793
 Transform:
   m_ObjectHideFlags: 0
