@@ -75,22 +75,19 @@ Este archivo permite personalizar los parámetros de la generación procedural. 
 
 
 <div align="center">
-<img src="/README-recursos/03-ui.png" width="640">
+<img src="/README-recursos/03-ui.png" width="600">
 </div>
 
 
-#### **Parámetros Principales**
 - **Tamaño del Chunk:** Define el tamaño de cada chunk generado.  
 - **Cantidad de Chunks a Generar:** Número total de chunks en el mapa.  
 - **Máx. Bifurcaciones:** Cantidad máxima de bifurcaciones por chunk.  
 - **Irregularidad de los Caminos:** Un valor cercano a 0 produce caminos más rectos, un valor cercano a 1 produce caminos más irregulares.
 - **Movimiento de los Caminos:** Un valor cercano a 0 produce caminos más cortos, un valor cercano a 1 produce caminos más largos o amplios dentro del chunk.
 
-#### **Parámetros Secundarios**
 - **Intentos para Crear Caminos:** Máximo de intentos al generar caminos, para evitar ciclos infinitos.  
 - **Chunks por Frame:** Controla cuántos chunks se procesan por iteración para mantener el rendimiento.  
 
-#### **Parámetros Seed**
 - **Semilla (`Seed_global`):** Permite repetir la misma generación con un valor específico.  
 
 ---
