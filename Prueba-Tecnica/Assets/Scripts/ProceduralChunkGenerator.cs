@@ -57,9 +57,11 @@ public class ProceduralsChunkGenerator : MonoBehaviour
     private Dictionary<Vector2Int, int[,]> dictChunksCoord = new Dictionary<Vector2Int, int[,]>();
 
 
+    private bool renderHD = false;
+
     private void Start()
     {
-        //RegenerarChunks();
+        RegenerarChunks();
     }
 
     public void RegenerarChunks()
@@ -72,11 +74,13 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
     public void ModoHD_ON()
     {
+        renderHD = true;
         RegenerarChunks();
     }
 
     public void ModoHD_OFF()
     {
+        renderHD = false;
         RegenerarChunks();
     }
 
@@ -123,8 +127,6 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
 
     }
-    
-
     private IEnumerator GenerarLosDemasChunks()
     {
         while (contadorDeChunks < parameters.cantidadTotalDeChunks)
@@ -790,20 +792,9 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         return coordinates;
     }
 
-
-
-    private void ModelarChunk(Vector2Int coordResuelto, bool esBase)
-    {/*
-        //aqui solo llenar la cola con las propiedades de los chunks, en el Update es donde se generan
-        colaChunks.Enqueue((coordResuelto, esBase));
-        generandoCubos = true; // Activar la generación progresiva
-        */
-
-        ModelarChunkOptimizado(coordResuelto, esBase);
-    }
     
 
-    private void ModelarChunkOptimizado(Vector2Int coordResuelto, bool esBase)
+    private void ModelarChunk(Vector2Int coordResuelto, bool esBase)
     {
         // modelar en unity el chunk del diccionario de la coordenada solicitada
         int[,] chunkResuelto = dictChunksCoord[coordResuelto];
