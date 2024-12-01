@@ -74,7 +74,7 @@ Configuración de `ConfigChunk.asset`
 Este archivo permite personalizar los parámetros de la generación procedural. Estos son los ajustes disponibles:
 
 
-![UI](/README-recursos/03-ui.png "UI"){ width=50% }
+![UI](/README-recursos/03-ui.png){ width=50% }
 
 #### **Parámetros Principales**
 - **Tamaño del Chunk:** Define el tamaño de cada chunk generado.  
