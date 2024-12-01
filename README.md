@@ -63,7 +63,7 @@ Este proyecto utiliza un enfoque de generación procedural para crear terrenos r
    
 <div align="center">
 
-![Demo 5](/README-recursos/02-demo5.gif "Demo 54")
+![Demo 5](/README-recursos/02-demo5.gif "Demo 5")
 
 </div>
 
@@ -147,6 +147,29 @@ La función **`GenerarLosDemasChunks()`** expande la generación:
 2. **Corrutinas en la Generación de Chunks**  
    - La función **`GenerarLosDemasChunks()`** utiliza corrutinas para evitar congelamientos durante el cálculo intensivo.  
    - Permite observar la creación progresiva de los chunks.  
+
+---
+
+### Interfaz de Usuario 
+Configuración de `ConfigChunk.asset`
+Este archivo permite personalizar los parámetros de la generación procedural. Estos son los ajustes disponibles:
+
+
+![UI](/README-recursos/03-ui.png "UI")
+
+#### **Parámetros Principales**
+- **Tamaño del Chunk:** Define el tamaño de cada chunk generado.  
+- **Cantidad de Chunks a Generar:** Número total de chunks en el mapa.  
+- **Máx. Bifurcaciones:** Cantidad máxima de bifurcaciones por chunk.  
+- **Irregularidad de los Caminos:** Un valor cercano a 0 produce caminos más rectos, un valor cercano a 1 produce caminos más irregulares.
+- **Movimiento de los Caminos:** Un valor cercano a 0 produce caminos más cortos, un valor cercano a 1 produce caminos más largos o amplios dentro del chunk.
+
+#### **Parámetros Secundarios**
+- **Intentos para Crear Caminos:** Máximo de intentos al generar caminos, para evitar ciclos infinitos.  
+- **Chunks por Frame:** Controla cuántos chunks se procesan por iteración para mantener el rendimiento.  
+
+#### **Parámetros Seed**
+- **Semilla (`Seed_global`):** Permite repetir la misma generación con un valor específico.  
 
 ---
 
