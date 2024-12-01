@@ -33,7 +33,7 @@ Este proyecto utiliza un enfoque de generación procedural para crear terrenos r
    ![Demo 2](/README-recursos/02-demo2.gif "Demo 2")
 
 3. **Modos de Visualización**  
-   - Modo esquemático vs. HD.  
+   Modo esquemático vs. HD.  
    
    ![Demo 3](/README-recursos/02-demo3.gif "Demo 3")
 
@@ -43,7 +43,7 @@ Este proyecto utiliza un enfoque de generación procedural para crear terrenos r
    ![Demo 4](/README-recursos/02-demo4.gif "Demo 4")
 
 5. **Caminos menos irregulares y con menor movimiento**  
-   Navegación inmersiva a través de los caminos generados.  
+   Forma de caminos ajustable.  
    
    ![Demo 5](/README-recursos/02-demo5.gif "Demo 54")
 
@@ -56,14 +56,12 @@ La lógica principal se encuentra en el script `ProceduralChunkGenerator.cs`. La
 #### Paso 1: Reinicio de chunks existentes  
 Elimina los chunks previos y reinicia variables clave.  
 ```csharp
-// Ejemplo de código de reinicio
-void ReiniciarChunks() {
-    foreach (Transform child in chunkContainer.transform) {
-        Destroy(child.gameObject);
+    public void RegenerarChunks()
+    {
+        EliminarHijosContenedor(chunksContainer);
+        ResetVariables();
+        GenerarAllChunks();
     }
-    dictChunksCoord.Clear();
-    // Otras variables reseteadas
-}
 ```
 
 #### Paso 2: Generación del primer chunk  
