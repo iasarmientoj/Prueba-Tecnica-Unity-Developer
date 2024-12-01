@@ -1,8 +1,8 @@
 # Generación Procedural de Terreno con Caminos en Chunks
+ 
+![Resultado final](/README-recursos/01-resumen.png "Resultado final")
 
-**Resumen del Proyecto**  
-Este proyecto utiliza un enfoque de generación procedural para crear terrenos representados en chunks interconectados mediante caminos, ofreciendo versatilidad visual y funcionalidad optimizada. El sistema implementa algoritmos para modelar caminos con bifurcaciones, controlar niveles de detalle, y gestionar eficientemente los recursos gracias a técnicas como el *occlusion culling* y las corrutinas para mejorar el rendimiento.  
-((Formato para insertar una imagen representativa del proyecto.))
+Este proyecto utiliza un enfoque de generación procedural para crear terrenos representados en chunks interconectados mediante caminos, con alta visual y optimizado. El sistema implementa algoritmos para modelar caminos con bifurcaciones, controlar niveles de detalle, y gestionar eficientemente los recursos gracias a técnicas como el *occlusion culling* y las corrutinas para mejorar el rendimiento.  
 
 ---
 
