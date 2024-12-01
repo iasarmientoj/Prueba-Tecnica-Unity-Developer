@@ -75,7 +75,7 @@ Este archivo permite personalizar los parámetros de la generación procedural. 
 
 
 <div align="center">
-<img src="/README-recursos/03-ui.png" width="540">
+<img src="/README-recursos/03-ui.png" width="640">
 </div>
 
 
