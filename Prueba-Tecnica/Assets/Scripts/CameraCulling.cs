@@ -40,4 +40,13 @@ public class CameraCulling : MonoBehaviour
             child.gameObject.SetActive(isVisible);
         }
     }
+
+
+    public void SetCamFPS(Camera cam)
+    {
+        mainCamera = cam;
+    }
+
+
+
 }

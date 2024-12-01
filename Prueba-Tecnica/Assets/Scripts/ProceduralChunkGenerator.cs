@@ -874,7 +874,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
                     if (esBase)
                      cuboVerde = Instantiate(prefabCuboVerdeInicioHD[Random.Range(0, prefabCuboVerdeInicioHD.Length)], position2, Quaternion.identity);
                     else
-                     cuboVerde = Instantiate(prefabCuboVerdeHD[Random.Range(0, prefabCuboVerdeInicioHD.Length)], position2, Quaternion.identity);
+                     cuboVerde = Instantiate(prefabCuboVerdeHD[Random.Range(0, prefabCuboVerdeHD.Length)], position2, Quaternion.identity);
 
                     cuboVerde.transform.parent = chunkParent.transform; // Asignar el padre
                 }
