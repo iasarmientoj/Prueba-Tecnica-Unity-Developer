@@ -52,13 +52,18 @@ public class ProceduralsChunkGenerator : MonoBehaviour
     //diccionario que contiene todos los chunks generados y su coordenada correspondiente para poder reconstruirlos en unity
     private Dictionary<Vector2Int, int[,]> dictChunksCoord = new Dictionary<Vector2Int, int[,]>();
 
-    /*
-    [SerializeField] private int tamano;
     private bool generandoCubos;
+
+    
+
+
+
+
+
+    [SerializeField] private int tamano;
     private Queue<Vector3> posicionesCubos; // Cola para almacenar las posiciones pendientes
     private GameObject chunkParent;
-    public int cubosPorFrame = 100; // Puedes ajustar este valor según el rendimiento deseado
-    */
+    
 
     private void Start()
     {
@@ -71,7 +76,11 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         ResetVariables();
         GenerarAllChunks();
 
-        /*
+
+
+
+
+        
         // Inicializar la cola y el contenedor de los cubos
         posicionesCubos = new Queue<Vector3>();
         chunkParent = new GameObject("Chunk (" + 0 + "," + 0 + ")");
@@ -88,17 +97,17 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
         generandoCubos = true; // Activar la generación progresiva
 
-        */
+        
     }
 
 
-    /*
+    
     private void Update()
     {
         if (generandoCubos)
         {
-            // Generar varios cubos por frame para mejorar la fluidez
-            for (int i = 0; i < cubosPorFrame; i++)
+            // Generar varios chunks por frame para mejorar la fluidez
+            for (int i = 0; i < parameters.chunksPorFrame; i++)
             {
                 if (posicionesCubos.Count > 0)
                 {
@@ -114,7 +123,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
             }
         }
     }
-    */
+    
 
 
     private void EliminarHijosContenedor(GameObject chunksContainer)
@@ -152,7 +161,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
         //agregar el chunk generado al diccionario de chunks
         dictChunksCoord[new Vector2Int(0, 0)] = chunk;
-        StartCoroutine(ModelarChunk(new Vector2Int(0, 0), true));
+        ModelarChunk(new Vector2Int(0, 0), true);
 
 
 
@@ -573,7 +582,7 @@ public class ProceduralsChunkGenerator : MonoBehaviour
         newChunk = GenerarBifurcaciones(caminoEncontrado, cantBifurcacionesPosibles, newChunk, offsetUnicoSemilla);
 
         dictChunksCoord[coordAbsolutas] = newChunk;
-        StartCoroutine(ModelarChunk(coordAbsolutas, false));
+        ModelarChunk(coordAbsolutas, false);
 
 
     }
@@ -811,10 +820,9 @@ public class ProceduralsChunkGenerator : MonoBehaviour
 
 
 
-    private IEnumerator ModelarChunk(Vector2Int coordResuelto, bool esBase)
+    private void ModelarChunk(Vector2Int coordResuelto, bool esBase)
     {
 
-        yield return null;
 
         // modelar en unity el chunk del diccionario de la coordenada solicitada
         int[,] chunkResuelto = dictChunksCoord[coordResuelto];
